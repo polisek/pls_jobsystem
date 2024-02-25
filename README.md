@@ -40,6 +40,10 @@ Config.DEFAULT_ANIM = "hack_loop"
 Config.DEFAULT_ANIM_DIC = "mp_prison_break"
 ```
 
+## Questions
+**Do I need to create a job in the database or in the framework?:** Yes, this script will not create anything in your db, but you can customize it.
+
+
 
 ## Preview
 
