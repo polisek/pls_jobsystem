@@ -1,7 +1,7 @@
 
 ![job_system](https://github.com/polisek/pls_jobsystem/assets/107623238/44215dfa-591e-4753-9d7e-b36806b4cc80)
 
-# 📙 Job system v1.0
+# 📙 Job system v1.0.2
 Job system for creating production tables.
 
 ## Dependencies
