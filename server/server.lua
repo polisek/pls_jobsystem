@@ -4,6 +4,10 @@ local Jobs = {}
 AddEventHandler('onResourceStart', function(resourceName)
     if (GetCurrentResourceName() == resourceName) then
         local loadFile = LoadResourceFile(GetCurrentResourceName(), "./server/jobs.json")
+        if not loadFile then
+            SaveResourceFile(GetCurrentResourceName(), "./server/jobs.json", json.encode({}), -1)
+            loadFile = {}
+        end
         Jobs = json.decode(loadFile)
         Wait(2000)
         TriggerClientEvent("pls_jobsystem:client:recivieJobs", -1, Jobs)
