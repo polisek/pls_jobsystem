@@ -33,6 +33,11 @@ end
 
 
 local function CreateNewCraftingPoint()
+  lib.notify({
+    title="Select point",
+    description="Confirm by [ E ]",
+    type="inform"
+  })
   while true do
     Wait(0)
     local hit, entity, coords = lib.raycast.cam(1|16)
