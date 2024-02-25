@@ -44,5 +44,7 @@ Config.DEFAULT_ANIM_DIC = "mp_prison_break"
 
 ## Join my discord or check my store
 **Discord**:https://discord.com/invite/HyNKsABYrb
+
 **Store**: https://store.polisek.io
+
 **Web**: https://polisek.io
