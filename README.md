@@ -19,7 +19,9 @@ Targets: ox_target, qb-target
 ```lua
 BRIDGE.UseMarkers = false
 ```
-
+## Commands
+/createjob - This will start to create a new job.
+/open_jobs - Opens the menu of all jobs.
 
 ## Configuration
 All framework, inventory and target setup in BRIDGE/config.lua.
