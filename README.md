@@ -57,7 +57,10 @@ end
 ## Questions
 **Do I need to create a job in the database or in the framework?:** Yes, this script will not create anything in your db, but you can customize it.
 
-
+## Features and updates
+**Update 25.2.2024**
+- You can create an alarm
+- You can create a cash register.
 
 ## Preview
 https://youtu.be/BK9EfBzi-Eg
