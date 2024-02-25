@@ -9,7 +9,9 @@ Job system for creating production tables.
 
 ## Supports 
 Frameworks: ESX / QB / OX
+
 Inventory: ox_inventory, qb_inventory, quasar_inventory.
+
 Targets: ox_target, qb-target
 
 ## Don't want to use target?
