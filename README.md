@@ -43,6 +43,16 @@ Config.BlacklistedStrings = {
 Config.DEFAULT_ANIM = "hack_loop"
 Config.DEFAULT_ANIM_DIC = "mp_prison_break"
 ```
+**Dispatch**
+```lua
+function SendDispatch(coords, jobLabel)
+        -- YOU DISPATCH
+        -- cache.ped
+        print(coords)
+        print(jobLabel)
+end
+```
+
 
 ## Questions
 **Do I need to create a job in the database or in the framework?:** Yes, this script will not create anything in your db, but you can customize it.
