@@ -33,6 +33,18 @@ local function IsPlayerHasCustomPerms(playerId)
     return true
 end
 
+
+lib.callback.register('pls_jobsystem:server:getBalance', function(source,jobName)
+    for _, job in pairs(Jobs) do
+        if job.job == jobName then
+            if not job.balance then
+                job.balance = 0
+            end
+            return job.balance
+        end
+    end
+end)
+
 RegisterNetEvent("pls_jobsystem:server:saveNewJob")
 AddEventHandler("pls_jobsystem:server:saveNewJob", function(jobData)
     local src = source
@@ -163,6 +175,57 @@ AddEventHandler("pls_jobsystem:server:createItem", function(craftingData)
     end
 end)
 
+RegisterNetEvent("pls_jobsystem:server:makeRegisterAction")
+AddEventHandler("pls_jobsystem:server:makeRegisterAction", function(jobName, action, number)
+    local src = source
+    if CanTrustPlayer(src) then
+        if IsJobExist(jobName) then
+            for _, job in pairs(Jobs) do
+                if job.job == jobName then
+                    if not job.balance then
+                        job.balance = 0
+                    end
+                    if action == "withdraw" then
+                        if job.balance > 0 and job.balance >= number and job.balance-number > 0 then
+                            job.balance = job.balance - number
+                            BRIDGE.AddItem(src, "money", number)
+                            lib.notify(src, {
+                                title="Withdraw",
+                                description="Done!",
+                                type="success"
+                            })
+                            SaveJobs()
+                        else
+                            lib.notify(src, {
+                                title="Withdraw",
+                                description="Cannot be done",
+                                type="error"
+                            })
+                        end
+                    elseif action == "deposit" then
+                        local playerMoney = BRIDGE.GetItemCount(src, "money")
+                        if playerMoney >= number then
+                            job.balance = job.balance + number
+                            BRIDGE.RemoveItem(src, "money", number)
+                            lib.notify(src, {
+                                title="Deposit",
+                                description="Done!",
+                                type="success"
+                            })
+                            SaveJobs()
+                        else
+                            lib.notify(src, {
+                                title="Deposit",
+                                description="You don't have enough money",
+                                type="error"
+                            })
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
 
 lib.addCommand('createjob', {
     help = 'This command create job',

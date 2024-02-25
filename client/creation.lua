@@ -78,6 +78,13 @@ local function CreateCraftingTable()
   end
 end
 
+local function AddonsExists(value)
+  if value then
+    return "Created"
+  else
+    return "Not created"
+  end
+end
 
 local function selectJob(jobData)
   selectedJob = jobData
@@ -88,7 +95,7 @@ local function selectJob(jobData)
       {
         title = selectedJob.label,
         description = "Click here for rename",
-        icon = 'circle',
+        icon = 'quote-left',
         onSelect = function()
           local input = lib.inputDialog('Editing job', 
           {
@@ -102,7 +109,7 @@ local function selectJob(jobData)
       {
         title = "Area size: "..selectedJob.area,
         description = "Click here for change job area",
-        icon = 'circle',
+        icon = 'expand',
         onSelect = function()
           local input = lib.inputDialog('Editing job', 
           {
@@ -114,9 +121,59 @@ local function selectJob(jobData)
         end,
       },
       {
+        title = "Cash register",
+        description = "Status: "..AddonsExists(selectedJob.register),
+        icon = 'dollar',
+        onSelect = function()
+          if selectedJob.register then
+            local alert = lib.alertDialog({
+                header = "Delete cash register",
+                content = "Do you really want to delete? ",
+                centered = true,
+                cancel = true
+            })
+            if alert == "confirm" then
+              selectedJob.register = nil
+              TriggerSecureEvent("pls_jobsystem:server:saveJob", selectedJob)
+            end
+          else
+            local coords = CreateNewCraftingPoint()
+            if coords then
+              selectedJob.register = coords
+              TriggerSecureEvent("pls_jobsystem:server:saveJob", selectedJob)
+            end
+          end
+        end,
+      },
+      {
+        title = "Alarm",
+        description = "Status: "..AddonsExists(selectedJob.alarm),
+        icon = 'bell',
+        onSelect = function()
+          if selectedJob.alarm then
+            local alert = lib.alertDialog({
+                header = "Delete alarm",
+                content = "Do you really want to delete? ",
+                centered = true,
+                cancel = true
+            })
+            if alert == "confirm" then
+              selectedJob.alarm = nil
+              TriggerSecureEvent("pls_jobsystem:server:saveJob", selectedJob)
+            end
+          else
+            local coords = CreateNewCraftingPoint()
+            if coords then
+              selectedJob.alarm = coords
+              TriggerSecureEvent("pls_jobsystem:server:saveJob", selectedJob)
+            end
+          end
+        end,
+      },
+      {
         title = "Craftings",
         description = "Click here for open crafting menu",
-        icon = 'circle',
+        icon = 'box',
         onSelect = function()
           EditCrafings()
         end,

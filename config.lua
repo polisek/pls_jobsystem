@@ -1,3 +1,5 @@
+local IS_SERVER = IsDuplicityVersion()
+
 Config = {}
 
 Config.DefaultDataJob = {
@@ -15,3 +17,12 @@ Config.BlacklistedStrings = {
 }
 
 Config.DirectoryToInventoryImages = "nui://ox_inventory/web/images/"
+
+if not IS_SERVER then
+    function SendDispatch(coords, jobLabel)
+        -- YOU DISPATCH
+        -- cache.ped
+        print(coords)
+        print(jobLabel)
+    end
+end
