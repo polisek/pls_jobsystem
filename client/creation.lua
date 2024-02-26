@@ -267,40 +267,41 @@ local function openCraftingTable(id)
             { type = 'select', label = "Main item", description =  "This is the item you want to crafting.",required = true, options = showedItems, clearable = true },
             { type = 'multi-select', label = "Ingedience", description =  "Required",required = true, options = showedItems, clearable = true },
           })
-          if tostring(input[1]) ~= "" then
-            local searched_value = tostring(input[1])
-            FilterData.useFilter = true
-            for word in searched_value:gmatch("[^,%s]+") do
-                table.insert(FilterData.filteredData, word)
-            end
-            goto BackToFilter
-          end
-          if input[1] == "" then
-            if input then
-
-              local defineIngedience = {}
-              for _, selectedIngedience in pairs(input[3]) do
-                table.insert(defineIngedience, {
-                  itemName = selectedIngedience,
-                  itemCount = 1,
-                })
+          if input then
+            if tostring(input[1]) ~= "" then
+              local searched_value = tostring(input[1])
+              FilterData.useFilter = true
+              for word in searched_value:gmatch("[^,%s]+") do
+                  table.insert(FilterData.filteredData, word)
               end
-
-              local newTable = {
-                itemName = input[2],
-                itemCount = 1,
-                ingedience = defineIngedience
-              }
-              table.insert(selectedJob.craftings[id].items, newTable)
-              TriggerSecureEvent("pls_jobsystem:server:saveJob", selectedJob)
-              lib.notify({
-                title="New recipe created",
-                description="Congrats! New recepie has been created.",
-                type="success"
-              })
-              openCraftingTable(cached.crafting_table_id)
+              goto BackToFilter
             end
-          end
+            if input[1] == "" then
+              
+
+                local defineIngedience = {}
+                for _, selectedIngedience in pairs(input[3]) do
+                  table.insert(defineIngedience, {
+                    itemName = selectedIngedience,
+                    itemCount = 1,
+                  })
+                end
+
+                local newTable = {
+                  itemName = input[2],
+                  itemCount = 1,
+                  ingedience = defineIngedience
+                }
+                table.insert(selectedJob.craftings[id].items, newTable)
+                TriggerSecureEvent("pls_jobsystem:server:saveJob", selectedJob)
+                lib.notify({
+                  title="New recipe created",
+                  description="Congrats! New recepie has been created.",
+                  type="success"
+                })
+                openCraftingTable(cached.crafting_table_id)
+              end
+            end
         end,
     })
 
