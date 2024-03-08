@@ -1,5 +1,5 @@
-shared_script '@xSounds/ai_module_fg-obfuscated.lua'
-fx_version 'cerulean'
+
+fx_version 'adamant'
 
 game 'gta5'
 
