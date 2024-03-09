@@ -9,6 +9,15 @@ AddEventHandler('onResourceStart', function(resourceName)
             loadFile = {}
         end
         Jobs = json.decode(loadFile)
+        for _, job in pairs(Jobs) do 
+            if job.stashes then
+                for _, stash in pairs(job.stashes) do
+                    BRIDGE.RegisterStash(stash.id, stash.label,stash.slots, stash.weight)
+                end
+            else
+                job.stashes = {}
+            end
+        end
         Wait(2000)
         TriggerClientEvent("pls_jobsystem:client:recivieJobs", -1, Jobs)
     end
@@ -142,6 +151,15 @@ AddEventHandler("pls_jobsystem:server:pullChanges", function(pullType)
     local src = source
     if CanTrustPlayer(src) then
         if IsPlayerHasCustomPerms(src) then
+            for _, job in pairs(Jobs) do 
+                if job.stashes then
+                    for _, stash in pairs(job.stashes) do
+                        BRIDGE.RegisterStash(stash.id, stash.label,stash.slots, stash.weight)
+                    end
+                else
+                    job.stashes = {}
+                end
+            end
             if pullType == "creator" then
                 TriggerClientEvent("pls_jobsystem:client:Pull", src, Jobs)
             elseif pullType == "all" then
@@ -230,6 +248,35 @@ AddEventHandler("pls_jobsystem:server:makeRegisterAction", function(jobName, act
         end
     end
 end)
+
+
+RegisterNetEvent("pls_jobsystem:server:createBackup")
+AddEventHandler("pls_jobsystem:server:createBackup", function(pullType)
+    local src = source
+    if CanTrustPlayer(src) then
+        SaveResourceFile(GetCurrentResourceName(), "./server/backup.json", json.encode(Jobs), -1)
+        lib.notify(src, {
+            title="Backup done!",
+            description="Congrats! Now you can do stupid things.",
+            type="success"
+        })
+    end
+end)
+
+
+
+RegisterNetEvent("pls_jobsystem:server:setBackup")
+AddEventHandler("pls_jobsystem:server:setBackup", function(pullType)
+    local src = source
+    if CanTrustPlayer(src) then
+        local loadFile = LoadResourceFile(GetCurrentResourceName(), "./server/backup.json")
+        if loadFile then
+            Jobs = json.decode(loadFile)
+            SaveJobs()
+        end
+    end
+end)
+
 
 lib.addCommand('createjob', {
     help = 'This command create job',

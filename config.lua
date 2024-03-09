@@ -19,6 +19,11 @@ Config.BlacklistedStrings = {
 Config.DirectoryToInventoryImages = "nui://ox_inventory/web/images/"
 
 if not IS_SERVER then
+    function openBossmenu()
+        print("Bossmenu open")
+        -- exports.yourbossmenu:openBossmenu()
+    end
+
     function SendDispatch(coords, jobLabel)
         -- YOU DISPATCH
         -- cache.ped

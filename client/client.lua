@@ -1,7 +1,11 @@
 local Jobs = {}
 local Targets = {}
-
+local Peds = {}
 local items = BRIDGE.GetItems()
+
+local function AddNewPed(pedData)
+  table.insert(Peds, pedData)
+end
 
 local function generateCrafting(craftItems)
   local options = {}
@@ -36,6 +40,12 @@ local function generateCrafting(craftItems)
                   end
               end
               if hasAllItems then
+                local animData = { anim = Config.DEFAULT_ANIM,dict = Config.DEFAULT_ANIM_DIC}
+                if k.animation then
+                  if k.animation.dict and k.animation.anim then
+                    animData = { anim = Config.DEFAULT_ANIM,dict = k.animation.dict}
+                  end
+                end
                 if lib.progressCircle({
                   duration = 10000,
                   label = 'Připravuješ '..items[k.itemName].label,
@@ -47,8 +57,8 @@ local function generateCrafting(craftItems)
                       move = true,
                   },
                   anim = {
-                      dict = Config.DEFAULT_ANIM_DIC,
-                      clip = Config.DEFAULT_ANIM
+                      dict = animData.dict,
+                      clip = animData.anim
                   },
                 }) then 
                   TriggerSecureEvent("pls_jobsystem:server:createItem", k)
@@ -222,8 +232,82 @@ local function GenerateCraftings()
       })
       table.insert(Targets, AlarmTarget)
     end
-  end
 
+    if job.bossmenu then
+      local BossTarget = BRIDGE.AddSphereTarget({
+        coords = vector3(job.bossmenu.x, job.bossmenu.y, job.bossmenu.z), 
+        options = {
+            {
+                name = 'bell',
+                icon = 'fa-solid fa-laptop',
+                label = "Boss menu",
+                -- groups = job.job,
+                onSelect = function(data)
+                  local jobname = BRIDGE.GetPlayerJob()
+                  if jobname == job.job then
+                    openBossmenu()
+                  else
+                    lib.notify({
+                      title="Not for you",
+                      description="You can't use this.",
+                      type="error"
+                    })
+                  end
+                end
+            },
+        },
+        debug = false,
+        radius = 0.2,
+      })
+      table.insert(Targets, BossTarget)
+    end
+
+    if job.stashes then
+      for _, stash in pairs(job.stashes) do
+        local stashID = BRIDGE.AddSphereTarget({
+          coords = vector3(stash.coords.x,stash.coords.y, stash.coords.z), 
+          options = {
+              {
+                  name = stash.id,
+                  icon = 'fa-solid fa-boxes-stacked',
+                  label = stash.label,
+                  -- groups = job.job,
+                  onSelect = function(data)
+                    if stash.job then
+                      local jobname = BRIDGE.GetPlayerJob()
+                      if jobname == job.job then
+                        BRIDGE.OpenStash(stash.id)
+                      else
+                        lib.notify({
+                          title="Not for you",
+                          description="You can't use this.",
+                          type="error"
+                        })
+                      end
+                    else
+                      BRIDGE.OpenStash(stash.id)
+                    end
+                  end
+              },
+          },
+          debug = false,
+          radius = 0.2,
+        })
+        table.insert(Targets, stashID)
+      end
+    end
+    if job.peds then
+      for _, ped in pairs(Peds) do 
+        if ped.entity then
+          DeleteEntity(ped.entity)
+        end
+      end
+      Peds = {}
+      for _, ped in pairs(job.peds) do
+        AddNewPed(ped)
+      end
+    end
+  end
 end
 
 
@@ -249,4 +333,41 @@ AddEventHandler("pls_jobsystem:client:Pull", function(ServerJobs)
   Jobs = ServerJobs
   Wait(100)
   GenerateCraftings()
+end)
+
+
+
+CreateThread(function()
+  while true do
+    local playerCoords = GetEntityCoords(cache.ped)
+    for i, ped in pairs(Peds) do 
+      if not Peds[i].entity then
+          if #(vector3(playerCoords.x, playerCoords.y, playerCoords.z) - vector3(ped.coords.x, ped.coords.y, ped.coords.z)) < 60.0  then
+              local model  = ped.model
+              RequestModel(model)
+              while not HasModelLoaded(model) do
+                  Wait(50)
+              end
+              Peds[i].entity = CreatePed(4, model, ped.coords.x, ped.coords.y, ped.coords.z-1, ped.heading, false, true)
+              FreezeEntityPosition(Peds[i].entity, true)
+              SetEntityInvincible(Peds[i].entity, true)
+              SetBlockingOfNonTemporaryEvents(Peds[i].entity, true)
+              if ped.animDict and ped.animAnim then
+                RequestAnimDict(ped.animDict)
+                while not HasAnimDictLoaded(ped.animDict) do
+                  Wait(50)
+                end
+            
+                TaskPlayAnim(Peds[i].entity, ped.animDict, ped.animAnim, 8.0, 0, -1, 1, 0, 0, 0)
+              end
+          end
+      else
+          if #(vector3(playerCoords.x, playerCoords.y, playerCoords.z) - vector3(ped.coords.x, ped.coords.y, ped.coords.z)) > 60.0 then
+              DeleteEntity(Peds[i].entity)
+              Peds[i].entity = nil
+          end
+      end
+    end
+    Wait(8000)
+  end
 end)
