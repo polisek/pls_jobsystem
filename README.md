@@ -1,7 +1,7 @@
 
 ![job_system](https://github.com/polisek/pls_jobsystem/assets/107623238/44215dfa-591e-4753-9d7e-b36806b4cc80)
 
-# 📙 Job system v1.0.2
+# 📙 Job system v1.0.5
 Job system for creating production tables.
 
 ## Dependencies
@@ -61,6 +61,17 @@ end
 **Update 25.2.2024**
 - You can create an alarm
 - You can create a cash register.
+
+**Update 26.2.2024**
+
+- Item filter
+
+**Update 9.3.2024**
+- You can create backups and the backup can be restored in game.
+- For each item you can add a custom animation for crafting.
+- Added bossmenu - Configurable export in config.lua
+- You can create peds with custom animations.
+- You can create stashes ( For everyone or just employees. ) (quasar_inventory, ox_inventory only)
 
 ## Preview
 https://youtu.be/BK9EfBzi-Eg
