@@ -128,7 +128,7 @@ end
 
 
 local function CreateNewPed()
-    local input = lib.inputDialog('Create stash', 
+    local input = lib.inputDialog('Create ped', 
     {
       {type = 'input', label = 'Label', description = 'Ped name', required = true, min = 4, max = 32},
       {type = 'input', label = 'Ped model', description = 'Enter ped model', required = true, min = 0, max = 64},
