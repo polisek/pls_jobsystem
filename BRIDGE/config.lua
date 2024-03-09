@@ -35,7 +35,7 @@ BRIDGE.UseMarkers = false -- This is for some script where u dont want use targe
 
 
 -- This is created for pls_keycards and pls_hiddenstashes FUCK THIS in other scripts.
-BRIDGE.QBStashesReplaceByPLS = true -- This is replace qb-inventory stashes.
+BRIDGE.QBStashesReplaceByPLS = false -- This is replace qb-inventory stashes.
 
 --[[ 
   _________                                        .__    .___      
