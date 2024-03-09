@@ -276,7 +276,7 @@ local function GenerateCraftings()
                     if stash.job then
                       local jobname = BRIDGE.GetPlayerJob()
                       if jobname == job.job then
-                        BRIDGE.OpenStash(stash.id)
+                        BRIDGE.OpenStash(stash.id, stash.weight, stash.slots)
                       else
                         lib.notify({
                           title="Not for you",

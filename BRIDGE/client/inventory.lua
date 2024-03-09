@@ -118,12 +118,17 @@ local function openStash(stashName)
     end
 end
 
-BRIDGE.OpenStash = function(stashName) 
+BRIDGE.OpenStash = function(stashName, max_weight, slots) 
     if BRIDGE.Inventory == "ox_inventory" then
         local stashData = {id=stashName}
         Inventory:openInventory("stash",stashData)
     elseif BRIDGE.Inventory == "qb_inventory" then
-        openStash(stashName)
+        if BRIDGE.QBStashesReplaceByPLS then
+            openStash(stashName)
+        else
+            TriggerServerEvent("inventory:server:OpenInventory", "stash", stashName, {maxweight = max_weight, slots =  slots})
+            TriggerEvent("inventory:client:SetCurrentStash",stashName)
+        end
     elseif BRIDGE.Inventory == "quasar_inventory" then
         local other = {}
         other.maxweight = 20000

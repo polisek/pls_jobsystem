@@ -517,7 +517,7 @@ function EditStashes()
     for i, stashes in pairs(selectedJob.stashes) do
       local newOption = {
         title = stashes.label,
-        description = "Click here for edit stashes. (ox_inventory, quasar_inventory)",
+        description = "Click here for edit stashes. ",
         icon = 'circle',
         onSelect = function()
 
@@ -564,7 +564,7 @@ function EditStashes()
 
     table.insert(options, {
       title="New stash",
-      description="Create stash (ox_inventory, quasar_inventory)",
+      description="Create stash",
       icon = "plus",
       onSelect = function()
         CreateNewStash()
