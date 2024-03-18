@@ -76,6 +76,9 @@ end
 ## Preview
 https://youtu.be/BK9EfBzi-Eg
 
+**New preview**
+https://www.youtube.com/watch?v=id_kd4f8_DU&t=3s
+
 
 ## Join my discord or check my store
 **Discord**:https://discord.com/invite/HyNKsABYrb
