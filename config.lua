@@ -19,7 +19,7 @@ Config.BlacklistedStrings = {
 Config.DirectoryToInventoryImages = "nui://ox_inventory/web/images/"
 
 if not IS_SERVER then
-    function openBossmenu()
+    function openBossmenu(jobname)
         print("Bossmenu open")
         -- exports.yourbossmenu:openBossmenu()
     end
