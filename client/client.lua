@@ -245,7 +245,7 @@ local function GenerateCraftings()
                 onSelect = function(data)
                   local jobname = BRIDGE.GetPlayerJob()
                   if jobname == job.job then
-                    openBossmenu()
+                    openBossmenu(job.job)
                   else
                     lib.notify({
                       title="Not for you",
