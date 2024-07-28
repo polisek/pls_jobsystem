@@ -43,7 +43,7 @@ local function generateCrafting(craftItems)
                 local animData = { anim = Config.DEFAULT_ANIM,dict = Config.DEFAULT_ANIM_DIC}
                 if k.animation then
                   if k.animation.dict and k.animation.anim then
-                    animData = { anim = Config.DEFAULT_ANIM,dict = k.animation.dict}
+                    animData = { anim = k.animation.anim,dict = k.animation.dict}
                   end
                 end
                 if lib.progressCircle({
