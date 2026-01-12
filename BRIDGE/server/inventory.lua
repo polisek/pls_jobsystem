@@ -19,7 +19,7 @@ if BRIDGE.Inventory  == "ox_inventory" then
 end
 
 if BRIDGE.Inventory == "qb_inventory" then
-    Inventory = exports['qs-inventory']
+    Inventory = exports['qb-inventory']
 end
 
 if BRIDGE.Inventory == "quasar_inventory" then
