@@ -1,0 +1,138 @@
+{
+  "creative": {
+    "title": "Kreativni rezim",
+    "newJob": "Novy job",
+    "jobs": "Joby",
+    "noJobs": "Zadne joby",
+    "pullMe": "Pull pro me",
+    "pullAll": "Pull pro vsechny",
+    "backup": "Vytvorit zalohu",
+    "restore": "Obnovit zalohu",
+    "close": "Zavrit"
+  },
+  "jobCreator": {
+    "title": "Novy job",
+    "label": "Nazev",
+    "labelDesc": "Zobrazovany nazev jobu",
+    "jobName": "Job name",
+    "jobNameDesc": "Interni nazev jobu (musi existovat ve frameworku)",
+    "area": "Oblast",
+    "areaDesc": "Velikost pracovni oblasti",
+    "create": "Vytvorit job"
+  },
+  "jobEditor": {
+    "title": "Editor jobu",
+    "settings": "Nastaveni",
+    "rename": "Prejmenovat",
+    "areaSize": "Velikost oblasti",
+    "features": "Funkce",
+    "cashRegister": "Pokladna",
+    "alarm": "Alarm",
+    "bossMenu": "Boss menu",
+    "craftings": "Craftingy",
+    "stashes": "Stashe",
+    "peds": "NPC",
+    "deleteJob": "Smazat job",
+    "setPosition": "Nastavit pozici",
+    "removePosition": "Odebrat pozici",
+    "created": "Vytvoreno",
+    "notCreated": "Nevytvoreno"
+  },
+  "craftingEditor": {
+    "title": "Editor craftingu",
+    "tables": "Crafting tabulky",
+    "newTable": "Nova tabulka",
+    "tableLabel": "Nazev tabulky",
+    "recipes": "Recepty",
+    "newRecipe": "Novy recept",
+    "mainItem": "Hlavni polozka",
+    "ingredients": "Suroviny",
+    "count": "Pocet",
+    "animation": "Animace",
+    "animName": "Nazev animace",
+    "animDict": "Animacni slovnik",
+    "clearAnimation": "Vymazat animaci",
+    "deleteTable": "Smazat tabulku",
+    "deleteRecipe": "Smazat recept",
+    "addRecipe": "Pridat recept",
+    "selectingRecipe": "Vyber item v sidebaru →",
+    "clickToActivate": "Klikni pro aktivaci",
+    "clickItemHint": "Klikni na item vpravo",
+    "addIngredient": "Pridat surovinu",
+    "selectingIngredient": "Klikej na itemy v sidebaru →"
+  },
+  "stashEditor": {
+    "title": "Editor stashu",
+    "newStash": "Novy stash",
+    "label": "Nazev",
+    "slots": "Sloty",
+    "weight": "Vaha",
+    "jobRestricted": "Omezeno na job",
+    "yes": "Ano",
+    "no": "Ne",
+    "changeId": "Zmenit ID",
+    "deleteStash": "Smazat stash"
+  },
+  "pedEditor": {
+    "title": "Editor NPC",
+    "newPed": "Nove NPC",
+    "label": "Nazev",
+    "model": "Model",
+    "animation": "Animace",
+    "animDict": "Animacni slovnik",
+    "deletePed": "Smazat NPC"
+  },
+  "crafting": {
+    "title": "Crafting",
+    "required": "Potrebne suroviny",
+    "craft": "Vyrobit",
+    "notEnough": "Nemas vsechny suroviny!"
+  },
+  "cashRegister": {
+    "title": "Pokladna",
+    "balance": "Zustatek",
+    "withdraw": "Vybrat",
+    "deposit": "Vlozit",
+    "amount": "Castka",
+    "amountDesc": "Zadej castku"
+  },
+  "confirm": {
+    "title": "Potvrzeni",
+    "yes": "Ano",
+    "no": "Ne",
+    "cancel": "Zrusit",
+    "confirm": "Potvrdit",
+    "deleteWarning": "Tuto akci nelze vzit zpet!",
+    "restoreWarning": "Opravdu chces obnovit zalohu? Zkontroluj server/backup.json!"
+  },
+  "itemSelector": {
+    "title": "Vyber polozku",
+    "search": "Hledat...",
+    "noResults": "Zadne vysledky",
+    "select": "Vybrat",
+    "selected": "Vybrano"
+  },
+  "itemSidebar": {
+    "title": "Itemy",
+    "hint": "Vyber rezim vlevo, pak klikni",
+    "clickToAdd": "Klikni na item pro pridani",
+    "items": "polozek",
+    "active": "Aktivni"
+  },
+  "toast": {
+    "success": "Uspech",
+    "error": "Chyba",
+    "info": "Info"
+  },
+  "common": {
+    "save": "Ulozit",
+    "cancel": "Zrusit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "create": "Vytvorit",
+    "close": "Zavrit",
+    "back": "Zpet",
+    "confirm": "Potvrdit",
+    "loading": "Nacitani..."
+  }
+}

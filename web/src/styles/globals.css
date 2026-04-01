@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: transparent;
+  color: white;
+  font-family: 'Inter', system-ui, sans-serif;
+  user-select: none;
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@layer components {
+  .glass {
+    @apply bg-panel-surface border border-panel-border;
+  }
+
+  .glass-hover {
+    @apply hover:bg-panel-hover transition-colors duration-150;
+  }
+
+  .glass-card {
+    background: linear-gradient(135deg, rgba(25, 25, 40, 0.95), rgba(20, 20, 32, 0.9));
+    @apply border border-panel-border rounded-xl;
+  }
+
+  .section-label {
+    @apply text-[10px] font-semibold uppercase tracking-wider flex items-center gap-2;
+    color: rgba(148, 163, 184, 0.7);
+  }
+
+  .card-gradient {
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  }
+
+  .active-indicator {
+    @apply relative;
+  }
+  .active-indicator::before {
+    content: '';
+    @apply absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-panel-accent;
+  }
+}

@@ -3,15 +3,16 @@ fx_version 'adamant'
 
 game 'gta5'
 
-description 'Polisek scripts'
+description 'PLS Job System - Dynamic job management with React UI'
 
 dependencies {'ox_lib'}
 
-shared_scripts { 
-    "BRIDGE/config.lua",  
+shared_scripts {
+    "BRIDGE/config.lua",
     'config.lua',
     "secure.lua",
-    '@ox_lib/init.lua',  
+    '@ox_lib/init.lua',
+    'locales/*.lua',
 }
 
 
@@ -19,7 +20,7 @@ client_scripts {
     "BRIDGE/client/framework.lua",
     "BRIDGE/client/inventory.lua",
     "BRIDGE/client/target.lua",
-	'client/*.lua',
+    'client/*.lua',
 }
 
 server_scripts {
@@ -28,6 +29,10 @@ server_scripts {
     'server/server.lua',
 }
 
+ui_page 'web/dist/index.html'
 
+files {
+    'web/dist/**/*',
+}
 
 lua54 "yes"

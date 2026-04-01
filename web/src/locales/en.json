@@ -1,0 +1,138 @@
+{
+  "creative": {
+    "title": "Creative Mode",
+    "newJob": "New Job",
+    "jobs": "Jobs",
+    "noJobs": "No jobs",
+    "pullMe": "Pull for ME",
+    "pullAll": "Pull for ALL",
+    "backup": "Create Backup",
+    "restore": "Restore Backup",
+    "close": "Close"
+  },
+  "jobCreator": {
+    "title": "New Job",
+    "label": "Label",
+    "labelDesc": "Display name for the job",
+    "jobName": "Job Name",
+    "jobNameDesc": "Internal job name (must exist in framework)",
+    "area": "Area",
+    "areaDesc": "Work area radius",
+    "create": "Create Job"
+  },
+  "jobEditor": {
+    "title": "Job Editor",
+    "settings": "Settings",
+    "rename": "Rename",
+    "areaSize": "Area Size",
+    "features": "Features",
+    "cashRegister": "Cash Register",
+    "alarm": "Alarm",
+    "bossMenu": "Boss Menu",
+    "craftings": "Craftings",
+    "stashes": "Stashes",
+    "peds": "NPCs",
+    "deleteJob": "Delete Job",
+    "setPosition": "Set Position",
+    "removePosition": "Remove Position",
+    "created": "Created",
+    "notCreated": "Not created"
+  },
+  "craftingEditor": {
+    "title": "Crafting Editor",
+    "tables": "Crafting Tables",
+    "newTable": "New Table",
+    "tableLabel": "Table Label",
+    "recipes": "Recipes",
+    "newRecipe": "New Recipe",
+    "mainItem": "Main Item",
+    "ingredients": "Ingredients",
+    "count": "Count",
+    "animation": "Animation",
+    "animName": "Animation Name",
+    "animDict": "Animation Dict",
+    "clearAnimation": "Clear Animation",
+    "deleteTable": "Delete Table",
+    "deleteRecipe": "Delete Recipe",
+    "addRecipe": "Add Recipe",
+    "selectingRecipe": "Select item in sidebar →",
+    "clickToActivate": "Click to activate",
+    "clickItemHint": "Click an item on the right",
+    "addIngredient": "Add ingredient",
+    "selectingIngredient": "Click items in sidebar →"
+  },
+  "stashEditor": {
+    "title": "Stash Editor",
+    "newStash": "New Stash",
+    "label": "Label",
+    "slots": "Slots",
+    "weight": "Weight",
+    "jobRestricted": "Job Restricted",
+    "yes": "Yes",
+    "no": "No",
+    "changeId": "Change ID",
+    "deleteStash": "Delete Stash"
+  },
+  "pedEditor": {
+    "title": "NPC Editor",
+    "newPed": "New NPC",
+    "label": "Label",
+    "model": "Model",
+    "animation": "Animation",
+    "animDict": "Animation Dict",
+    "deletePed": "Delete NPC"
+  },
+  "crafting": {
+    "title": "Crafting",
+    "required": "Required items",
+    "craft": "Craft",
+    "notEnough": "You don't have all required items!"
+  },
+  "cashRegister": {
+    "title": "Cash Register",
+    "balance": "Balance",
+    "withdraw": "Withdraw",
+    "deposit": "Deposit",
+    "amount": "Amount",
+    "amountDesc": "Enter amount"
+  },
+  "confirm": {
+    "title": "Confirmation",
+    "yes": "Yes",
+    "no": "No",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "deleteWarning": "This action cannot be undone!",
+    "restoreWarning": "Do you really want to restore backup? Check server/backup.json first!"
+  },
+  "itemSelector": {
+    "title": "Select Item",
+    "search": "Search...",
+    "noResults": "No results",
+    "select": "Select",
+    "selected": "Selected"
+  },
+  "itemSidebar": {
+    "title": "Items",
+    "hint": "Select a mode on the left, then click",
+    "clickToAdd": "Click an item to add it",
+    "items": "items",
+    "active": "Active"
+  },
+  "toast": {
+    "success": "Success",
+    "error": "Error",
+    "info": "Info"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "close": "Close",
+    "back": "Back",
+    "confirm": "Confirm",
+    "loading": "Loading..."
+  }
+}
