@@ -335,6 +335,7 @@ function StartICWithRecipe(station, recipe)
                 description = locale.not_enough_items or "Nemas vsechny potrebne suroviny.",
                 type = "error"
             })
+            CloseNUI()
             return
         end
 
