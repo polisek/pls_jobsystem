@@ -188,6 +188,41 @@ local function GenerateCraftings()
         table.insert(Targets, stashID)
       end
     end
+    if job.shops then
+      for _, shop in pairs(job.shops) do
+        local shopTarget = BRIDGE.AddSphereTarget({
+          coords = vector3(shop.coords.x, shop.coords.y, shop.coords.z),
+          options = {
+              {
+                  name = shop.id,
+                  icon = 'fa-solid fa-store',
+                  label = shop.label,
+                  onSelect = function(data)
+                    local jobname = BRIDGE.GetPlayerJob()
+                    if jobname == job.job then
+                      OpenNUI("shop", {
+                        items = shop.items,
+                        label = shop.label,
+                        job = job.job,
+                        imageDir = Config.DirectoryToInventoryImages,
+                      })
+                    else
+                      local locale = Locales[Config.Locale or "en"] or Locales["en"]
+                      NUINotify({
+                        title = locale.error or "Error",
+                        description = locale.not_your_job or "You can't use this.",
+                        type = "error"
+                      })
+                    end
+                  end
+              },
+          },
+          debug = false,
+          radius = 0.2,
+        })
+        table.insert(Targets, shopTarget)
+      end
+    end
     if job.peds then
       for _, ped in pairs(Peds) do
         if ped.entity then

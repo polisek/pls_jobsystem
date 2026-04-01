@@ -32,6 +32,7 @@
     "craftings": "Craftings",
     "stashes": "Stashes",
     "peds": "NPCs",
+    "shops": "Shops",
     "deleteJob": "Delete Job",
     "setPosition": "Set Position",
     "removePosition": "Remove Position",
@@ -118,6 +119,24 @@
     "clickToAdd": "Click an item to add it",
     "items": "items",
     "active": "Active"
+  },
+  "shopEditor": {
+    "title": "Shop Editor",
+    "shops": "Shops",
+    "newShop": "New Shop",
+    "shopLabel": "Shop name",
+    "items": "Items",
+    "deleteShop": "Delete Shop",
+    "addItem": "Add Item",
+    "selectingItem": "Select item in sidebar",
+    "clickItemHint": "Click an item on the right",
+    "clickToActivate": "Click to activate"
+  },
+  "shop": {
+    "title": "Shop",
+    "buy": "Buy",
+    "piece": "pc",
+    "total": "Total"
   },
   "toast": {
     "success": "Success",

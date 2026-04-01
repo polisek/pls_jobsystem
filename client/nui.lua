@@ -290,3 +290,11 @@ RegisterNUICallback("openStash", function(data, cb)
     end
     cb({ ok = true })
 end)
+
+RegisterNUICallback("buyShopItem", function(data, cb)
+    if data.item and data.job then
+        TriggerSecureEvent("pls_jobsystem:server:buyShopItem", data.item, data.job)
+        CloseNUI()
+    end
+    cb({ ok = true })
+end)

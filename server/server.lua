@@ -249,6 +249,57 @@ AddEventHandler("pls_jobsystem:server:makeRegisterAction", function(jobName, act
     end
 end)
 
+RegisterNetEvent("pls_jobsystem:server:buyShopItem")
+AddEventHandler("pls_jobsystem:server:buyShopItem", function(itemData, jobName)
+    local src = source
+    if CanTrustPlayer(src) then
+        if itemData and itemData.itemName and itemData.price and jobName then
+            local price = tonumber(itemData.price) or 0
+            local quantity = tonumber(itemData.quantity) or 1
+            if quantity < 1 then quantity = 1 end
+            if quantity > 99 then quantity = 99 end
+            if price <= 0 then return end
+
+            local totalCost = price * quantity
+
+            -- Check player has enough money
+            local playerMoney = BRIDGE.GetItemCount(src, "money")
+            if playerMoney >= totalCost then
+                BRIDGE.RemoveItem(src, "money", totalCost)
+                BRIDGE.AddItem(src, itemData.itemName, quantity)
+
+                -- Add to job balance
+                for _, job in pairs(Jobs) do
+                    if job.job == jobName then
+                        if not job.balance then job.balance = 0 end
+                        job.balance = job.balance + totalCost
+                        SaveJobs()
+                        break
+                    end
+                end
+
+                local itemLabel = itemData.itemName
+                local items = BRIDGE.GetItems()
+                if items and items[itemData.itemName] then
+                    itemLabel = items[itemData.itemName].label
+                end
+
+                lib.notify(src, {
+                    title = "Shop",
+                    description = quantity .. "x " .. itemLabel .. " for $" .. totalCost,
+                    type = "success"
+                })
+            else
+                lib.notify(src, {
+                    title = "Shop",
+                    description = "You don't have enough money!",
+                    type = "error"
+                })
+            end
+        end
+    end
+end)
+
 
 RegisterNetEvent("pls_jobsystem:server:createBackup")
 AddEventHandler("pls_jobsystem:server:createBackup", function(pullType)

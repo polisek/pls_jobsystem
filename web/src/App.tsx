@@ -8,9 +8,11 @@ import JobCreator from './components/creative/JobCreator'
 import CraftingEditor from './components/creative/CraftingEditor'
 import StashEditor from './components/creative/StashEditor'
 import PedEditor from './components/creative/PedEditor'
+import ShopEditor from './components/creative/ShopEditor'
 import FeatureEditor from './components/creative/FeatureEditor'
 import CraftingPanel from './components/panels/CraftingPanel'
 import CashRegisterPanel from './components/panels/CashRegisterPanel'
+import ShopPanel from './components/panels/ShopPanel'
 import ConfirmDialog from './components/panels/ConfirmDialog'
 import ToastContainer from './components/ui/Toast'
 
@@ -97,12 +99,14 @@ export default function App() {
           {editorPanel === 'craftingEditor' && <CraftingEditor />}
           {editorPanel === 'stashEditor' && <StashEditor />}
           {editorPanel === 'pedEditor' && <PedEditor />}
+          {editorPanel === 'shopEditor' && <ShopEditor />}
         </>
       )}
 
       {/* Player Panels */}
       {activePanel === 'crafting' && <CraftingPanel />}
       {activePanel === 'cashRegister' && <CashRegisterPanel />}
+      {activePanel === 'shop' && <ShopPanel />}
       {activePanel === 'confirm' && <ConfirmDialog />}
 
       {/* Toasts */}

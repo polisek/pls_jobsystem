@@ -2,7 +2,7 @@ local IS_SERVER = IsDuplicityVersion()
 
 Config = {}
 
-Config.Locale = "cs" -- "cs" or "en"
+Config.Locale = "en" -- "cs" or "en"
 
 Config.DefaultDataJob = {
     label = "", -- STRING

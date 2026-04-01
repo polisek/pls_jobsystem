@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUIStore } from '../../store/uiStore'
 import { useJobStore } from '../../store/jobStore'
@@ -10,6 +10,7 @@ export default function ShopPanel() {
   const { t } = useTranslation()
   const panelData = useUIStore((s) => s.panelData)
   const items = useJobStore((s) => s.items)
+  const [quantities, setQuantities] = useState<Record<number, number>>({})
 
   if (!panelData?.items) return null
 
@@ -20,8 +21,15 @@ export default function ShopPanel() {
 
   const getItemLabel = (name: string) => items.find((i) => i.name === name)?.label || name
 
-  const handleBuy = (shopItem: ShopItem) => {
-    fetchNui('buyShopItem', { item: shopItem, job: jobName })
+  const getQty = (idx: number) => quantities[idx] || 1
+
+  const setQty = (idx: number, val: number) => {
+    setQuantities((prev) => ({ ...prev, [idx]: Math.max(1, Math.min(99, val)) }))
+  }
+
+  const handleBuy = (shopItem: ShopItem, idx: number) => {
+    const qty = getQty(idx)
+    fetchNui('buyShopItem', { item: { ...shopItem, quantity: qty }, job: jobName })
     fetchNui('closeUI')
   }
 
@@ -48,39 +56,83 @@ export default function ShopPanel() {
 
         {/* Items */}
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
-          {shopItems.map((shopItem, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-3 p-3.5 rounded-lg border border-panel-border/60 card-gradient hover:border-green-500/20 hover:bg-white/[0.02] transition-all group"
-            >
-              <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/5">
-                <img
-                  src={`${imageDir}${shopItem.itemName}.png`}
-                  alt={shopItem.itemName}
-                  className="w-9 h-9 object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none'
-                  }}
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">
-                  {getItemLabel(shopItem.itemName)}
-                </p>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <span className="text-xs font-semibold text-green-400">${shopItem.price}</span>
+          {shopItems.map((shopItem, index) => {
+            const qty = getQty(index)
+            const totalPrice = shopItem.price * qty
+
+            return (
+              <div
+                key={index}
+                className="p-3.5 rounded-lg border border-panel-border/60 card-gradient hover:border-green-500/20 hover:bg-white/[0.02] transition-all"
+              >
+                {/* Top row: icon + name + unit price */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/5">
+                    <img
+                      src={`${imageDir}${shopItem.itemName}.png`}
+                      alt={shopItem.itemName}
+                      className="w-9 h-9 object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-200">
+                      {getItemLabel(shopItem.itemName)}
+                    </p>
+                    <span className="text-xs text-green-400">${shopItem.price} / {t('shop.piece')}</span>
+                  </div>
+                </div>
+
+                {/* Bottom row: quantity + total + buy */}
+                <div className="flex items-center gap-3">
+                  {/* Quantity selector */}
+                  <div className="flex items-center gap-0 rounded-lg border border-panel-border/60 overflow-hidden">
+                    <button
+                      onClick={() => setQty(index, qty - 1)}
+                      className="w-8 h-8 flex items-center justify-center hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                      </svg>
+                    </button>
+                    <input
+                      type="number"
+                      value={qty}
+                      onChange={(e) => setQty(index, parseInt(e.target.value) || 1)}
+                      className="w-10 h-8 bg-white/5 text-xs text-white text-center focus:outline-none border-x border-panel-border/60"
+                      min={1}
+                      max={99}
+                    />
+                    <button
+                      onClick={() => setQty(index, qty + 1)}
+                      className="w-8 h-8 flex items-center justify-center hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Total price */}
+                  <div className="flex-1 text-right">
+                    <span className="text-xs text-gray-500">{t('shop.total')}: </span>
+                    <span className="text-sm font-semibold text-green-400">${totalPrice}</span>
+                  </div>
+
+                  {/* Buy button */}
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleBuy(shopItem, index)}
+                  >
+                    {t('shop.buy')}
+                  </Button>
                 </div>
               </div>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => handleBuy(shopItem)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                {t('shop.buy')}
-              </Button>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

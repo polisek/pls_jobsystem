@@ -32,6 +32,7 @@
     "craftings": "Craftingy",
     "stashes": "Stashe",
     "peds": "NPC",
+    "shops": "Obchody",
     "deleteJob": "Smazat job",
     "setPosition": "Nastavit pozici",
     "removePosition": "Odebrat pozici",
@@ -118,6 +119,24 @@
     "clickToAdd": "Klikni na item pro pridani",
     "items": "polozek",
     "active": "Aktivni"
+  },
+  "shopEditor": {
+    "title": "Editor obchodu",
+    "shops": "Obchody",
+    "newShop": "Novy obchod",
+    "shopLabel": "Nazev obchodu",
+    "items": "Polozky",
+    "deleteShop": "Smazat obchod",
+    "addItem": "Pridat polozku",
+    "selectingItem": "Vyber polozku v sidebaru",
+    "clickItemHint": "Klikni na item vpravo",
+    "clickToActivate": "Klikni pro aktivaci"
+  },
+  "shop": {
+    "title": "Obchod",
+    "buy": "Koupit",
+    "piece": "ks",
+    "total": "Celkem"
   },
   "toast": {
     "success": "Uspech",
