@@ -5,22 +5,12 @@ local isCreativeMode = false
 local raycastPromise = nil
 
 -- Helper: Get locale strings
-local function GetLocale()
+function GetLocale()
     return Config.Locale or "en"
 end
 
--- Helper: Check if string is blacklisted
-local function IsBlacklistedString(text)
-    for _, v in pairs(Config.BlacklistedStrings) do
-        if string.find(string.lower(text), string.lower(v)) then
-            return true
-        end
-    end
-    return false
-end
-
 -- Helper: Convert items table to array for React
-local function GetItemsArray()
+function GetItemsArray()
     local arr = {}
     local items = BRIDGE.GetItems()
     for _, v in pairs(items) do
@@ -127,6 +117,9 @@ end
 -- ==========================================
 
 RegisterNUICallback("closeUI", function(data, cb)
+    if GizmoState.active then
+        CleanupGizmo()
+    end
     CloseNUI()
     isCreativeMode = false
     cb({ ok = true })
@@ -300,30 +293,203 @@ RegisterNUICallback("buyShopItem", function(data, cb)
 end)
 
 RegisterNUICallback("requestPropPlacement", function(data, cb)
-    -- Close NUI and start prop placement loop in Lua
-    SetNuiFocus(false, false)
-    isNUIOpen = false
     cb({ ok = true })
+    if GizmoState.active then return end
 
     CreateThread(function()
-        local result = PlaceProp(data.model)
-        -- Re-open NUI and notify React of result
-        SetNuiFocus(true, true)
-        isNUIOpen = true
-        if result then
-            SendNUIMessage({
-                action = "propPlaced",
-                data = {
-                    cancelled = false,
-                    coords = { x = result.coords.x, y = result.coords.y, z = result.coords.z },
-                    rotation = { x = result.rotation.x, y = result.rotation.y, z = result.rotation.z },
-                }
-            })
+        local modelName = data.model
+        local hintCoords = data.coords  -- optional Vec3 hint from editor
+
+        -- Load model
+        local model = joaat(modelName)
+        RequestModel(model)
+        local t = 0
+        while not HasModelLoaded(model) and t < 5000 do
+            Wait(50); t = t + 50
+        end
+        if not HasModelLoaded(model) then
+            NUINotify({ title = "Error", description = "Model nenalezen: " .. modelName, type = "error" })
+            return
+        end
+
+        -- Pick spawn position: hint coords → brief raycast → player position
+        local spawnPos
+        if hintCoords and hintCoords.x then
+            spawnPos = vector3(hintCoords.x, hintCoords.y, hintCoords.z)
         else
+            local hit, _, rCoords = lib.raycast.cam(1 | 16)
+            if hit and rCoords then
+                spawnPos = rCoords
+            else
+                spawnPos = GetEntityCoords(cache.ped) + GetEntityForwardVector(cache.ped) * 2.0
+            end
+        end
+
+        -- Spawn ghost prop
+        GizmoState.prop = CreateObject(model, spawnPos.x, spawnPos.y, spawnPos.z, false, true, false)
+        SetEntityCollision(GizmoState.prop, false, true)
+        SetEntityAsMissionEntity(GizmoState.prop, true, true)
+        SetEntityAlpha(GizmoState.prop, 200, false)
+        SetModelAsNoLongerNeeded(model)
+
+        -- Create scripted camera orbiting around prop
+        GizmoState.cam        = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+        GizmoState.camHeading = GetEntityHeading(cache.ped) + 180.0
+        GizmoState.camDist    = 4.0
+        GizmoState.active     = true
+
+        UpdateGizmoCam()
+        SetCamActive(GizmoState.cam, true)
+        RenderScriptCams(true, true, 500, true, true)
+
+        -- Open gizmo panel in React (keeps creative mode open — only sets activePanel)
+        SendNUIMessage({
+            action = "openPanel",
+            data   = { panel = "propGizmo", data = { model = modelName } }
+        })
+
+        -- Update loop: project prop 3D → 2D and send to React (~30 fps)
+        while GizmoState.active do
+            Wait(33)
+            if not DoesEntityExist(GizmoState.prop) then break end
+
+            local pos = GetEntityCoords(GizmoState.prop)
+            local rot = GetEntityRotation(GizmoState.prop, 2)
+
+            -- Adaptive axis length so arrows are visible at any distance
+            local camPos = GetFinalRenderedCamCoord()
+            local dist   = #(camPos - pos)
+            local axLen  = math.max(0.4, dist * 0.12)
+            GizmoState.axisWorldLen = axLen
+
+            local _, cx, cy = GetScreenCoordFromWorldCoord(pos.x, pos.y, pos.z)
+            local _, xx, xy = GetScreenCoordFromWorldCoord(pos.x + axLen, pos.y,        pos.z)
+            local _, yx, yy = GetScreenCoordFromWorldCoord(pos.x,        pos.y + axLen, pos.z)
+            local _, zx, zy = GetScreenCoordFromWorldCoord(pos.x,        pos.y,        pos.z + axLen)
+
             SendNUIMessage({
-                action = "propPlaced",
-                data = { cancelled = true }
+                action = "gizmoUpdate",
+                data   = {
+                    center       = { x = cx, y = cy },
+                    axes         = {
+                        x = { x = xx, y = xy },
+                        y = { x = yx, y = yy },
+                        z = { x = zx, y = zy },
+                    },
+                    worldPos      = { x = pos.x, y = pos.y, z = pos.z },
+                    rotation      = { x = rot.x, y = rot.y, z = rot.z },
+                    axisWorldLen  = axLen,
+                }
             })
         end
     end)
+end)
+
+-- ── Move / rotate prop ────────────────────────────────────────
+RegisterNUICallback("gizmoApplyDelta", function(data, cb)
+    cb({ ok = true })
+    if not GizmoState.active or not DoesEntityExist(GizmoState.prop) then return end
+    local pos = GetEntityCoords(GizmoState.prop)
+    local rot = GetEntityRotation(GizmoState.prop, 2)
+    local d   = data.delta or 0.0
+
+    if data.type == 'translate' then
+        local nx, ny, nz = pos.x, pos.y, pos.z
+        if     data.axis == 'x' then nx = nx + d
+        elseif data.axis == 'y' then ny = ny + d
+        elseif data.axis == 'z' then nz = nz + d end
+        SetEntityCoords(GizmoState.prop, nx, ny, nz, false, false, false, false)
+    elseif data.type == 'rotate' then
+        local rx, ry, rz = rot.x, rot.y, rot.z
+        if     data.axis == 'x' then rx = rx + d
+        elseif data.axis == 'y' then ry = ry + d
+        elseif data.axis == 'z' then rz = rz + d end
+        SetEntityRotation(GizmoState.prop, rx, ry, rz, 2, true)
+    end
+end)
+
+-- ── Orbit camera with right-drag ─────────────────────────────
+RegisterNUICallback("gizmoCameraOrbit", function(data, cb)
+    cb({ ok = true })
+    if not GizmoState.active then return end
+    GizmoState.camHeading = GizmoState.camHeading + (data.dx or 0) * 0.5
+    UpdateGizmoCam()
+end)
+
+-- ── Confirm placement ─────────────────────────────────────────
+RegisterNUICallback("gizmoConfirm", function(data, cb)
+    cb({ ok = true })
+    if not GizmoState.active then return end
+
+    local pos = GetEntityCoords(GizmoState.prop)
+    local rot = GetEntityRotation(GizmoState.prop, 2)
+
+    GizmoState.active = false
+    DeleteEntity(GizmoState.prop);  GizmoState.prop = nil
+    RenderScriptCams(false, true, 500, true, true)
+    DestroyCam(GizmoState.cam, false); GizmoState.cam = nil
+
+    -- propPlacedGizmo → App.tsx closes propGizmo panel + re-dispatches propPlaced
+    SendNUIMessage({
+        action = "propPlacedGizmo",
+        data   = {
+            cancelled = false,
+            coords    = { x = pos.x, y = pos.y, z = pos.z },
+            rotation  = { x = rot.x, y = rot.y, z = rot.z },
+        }
+    })
+end)
+
+-- ── Cancel placement ──────────────────────────────────────────
+RegisterNUICallback("gizmoCancel", function(data, cb)
+    cb({ ok = true })
+    GizmoState.active = false
+    if GizmoState.prop and DoesEntityExist(GizmoState.prop) then
+        DeleteEntity(GizmoState.prop); GizmoState.prop = nil
+    end
+    RenderScriptCams(false, true, 500, true, true)
+    if GizmoState.cam then DestroyCam(GizmoState.cam, false); GizmoState.cam = nil end
+
+    SendNUIMessage({ action = "propPlacedGizmo", data = { cancelled = true } })
+end)
+
+RegisterNUICallback("cancelInteractiveCrafting", function(data, cb)
+    TriggerEvent('pls_jobsystem:client:cancelInteractiveCrafting')
+    cb({ ok = true })
+end)
+
+-- Player selected a recipe in the selection panel
+RegisterNUICallback("selectICRecipe", function(data, cb)
+    cb({ ok = true })
+    if not ICPendingStation or not ICPendingRecipes or not data.recipeId then return end
+
+    local recipe = nil
+    for _, r in ipairs(ICPendingRecipes) do
+        if r.id == data.recipeId then
+            recipe = r
+            break
+        end
+    end
+
+    if not recipe then return end
+
+    local station = ICPendingStation
+    ICPendingStation = nil
+    ICPendingRecipes = nil
+
+    -- Drop NUI focus but keep panel mounted — StartICWithRecipe will send startICCrafting
+    SetNuiFocus(false, false)
+    isNUIOpen = false
+
+    CreateThread(function()
+        StartICWithRecipe(station, recipe)
+    end)
+end)
+
+-- Player cancelled the recipe selection panel
+RegisterNUICallback("cancelICSelection", function(data, cb)
+    ICPendingStation = nil
+    ICPendingRecipes = nil
+    CloseNUI()
+    cb({ ok = true })
 end)

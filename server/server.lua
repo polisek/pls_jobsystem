@@ -342,3 +342,48 @@ lib.addCommand('open_jobs', {
 }, function(source, args, raw)
     TriggerClientEvent("pls_jobsystem:client:openJobMenu", source, Jobs)
 end)
+
+-- INTERACTIVE CRAFTING SERVER LOGIC
+lib.callback.register('pls_jobsystem:server:checkICIngredients', function(source, ingredients)
+    local src = source
+    local hasAll = true
+    for _, ing in pairs(ingredients) do
+        local count = BRIDGE.GetItemCount(src, ing.itemName)
+        if count < ing.itemCount then
+            hasAll = false
+            break
+        end
+    end
+    return hasAll
+end)
+
+lib.callback.register('pls_jobsystem:server:consumeICIngredient', function(source, itemName, itemCount)
+    local src = source
+    local hasItem = BRIDGE.GetItemCount(src, itemName) >= itemCount
+    if hasItem then
+        BRIDGE.RemoveItem(src, itemName, itemCount)
+        return true
+    end
+    return false
+end)
+
+RegisterNetEvent("pls_jobsystem:server:finishIC")
+AddEventHandler("pls_jobsystem:server:finishIC", function(resultItem, resultCount)
+    local src = source
+    if CanTrustPlayer(src) then
+        BRIDGE.AddItem(src, resultItem, resultCount)
+        local itemLabel = "Item"
+        local items = BRIDGE.GetItems()
+        for _, it in pairs(items) do
+            if it.name == resultItem then
+                itemLabel = it.label
+                break
+            end
+        end
+        lib.notify(src, {
+            title = "Crafting",
+            description = "You crafted " .. resultCount .. "x " .. itemLabel,
+            type = "success"
+        })
+    end
+end)

@@ -11,10 +11,13 @@ import PedEditor from './components/creative/PedEditor'
 import ShopEditor from './components/creative/ShopEditor'
 import BlipEditor from './components/creative/BlipEditor'
 import PropEditor from './components/creative/PropEditor'
+import InteractiveCraftingEditor from './components/creative/InteractiveCraftingEditor'
 import FeatureEditor from './components/creative/FeatureEditor'
 import CraftingPanel from './components/panels/CraftingPanel'
 import CashRegisterPanel from './components/panels/CashRegisterPanel'
 import ShopPanel from './components/panels/ShopPanel'
+import InteractiveCraftingPanel from './components/panels/InteractiveCraftingPanel'
+import GizmoPropPanel from './components/panels/GizmoPropPanel'
 import ConfirmDialog from './components/panels/ConfirmDialog'
 import ToastContainer from './components/ui/Toast'
 
@@ -73,6 +76,13 @@ export default function App() {
     useUIStore.getState().setRaycastPending(false)
   }, []))
 
+  // NUI Event: gizmo done — close propGizmo panel (keep creative mode), re-dispatch propPlaced
+  useNuiEvent('propPlacedGizmo', useCallback((data: any) => {
+    closePanel()
+    // Re-dispatch as window message so editor components (PropEditor, ICEditor) can pick it up
+    window.postMessage({ action: 'propPlaced', data }, '*')
+  }, [closePanel]))
+
   // ESC key handler — always notify Lua to release NUI focus
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -104,6 +114,7 @@ export default function App() {
           {editorPanel === 'shopEditor' && <ShopEditor />}
           {editorPanel === 'blipEditor' && <BlipEditor />}
           {editorPanel === 'propEditor' && <PropEditor />}
+          {editorPanel === 'interactiveCraftingEditor' && <InteractiveCraftingEditor />}
         </>
       )}
 
@@ -111,6 +122,8 @@ export default function App() {
       {activePanel === 'crafting' && <CraftingPanel />}
       {activePanel === 'cashRegister' && <CashRegisterPanel />}
       {activePanel === 'shop' && <ShopPanel />}
+      {activePanel === 'interactiveCrafting' && <InteractiveCraftingPanel />}
+      {activePanel === 'propGizmo' && <GizmoPropPanel />}
       {activePanel === 'confirm' && <ConfirmDialog />}
 
       {/* Toasts */}

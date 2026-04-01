@@ -18,6 +18,16 @@ Config.BlacklistedStrings = {
     "weapon", "weed", "meth","coke", "ammo", "gun", "pistol", "drug", "c4", "WEAPON", "AMMO", "at_", "keycard", "gun", "money", "black_money"
 }
 
+function IsBlacklistedString(text)
+    if not text or not Config.BlacklistedStrings then return false end
+    for _, v in pairs(Config.BlacklistedStrings) do
+        if string.find(string.lower(text), string.lower(v)) then
+            return true
+        end
+    end
+    return false
+end
+
 Config.DirectoryToInventoryImages = "nui://ox_inventory/web/images/"
 
 if not IS_SERVER then

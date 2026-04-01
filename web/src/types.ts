@@ -4,6 +4,31 @@ export interface Vec3 {
   z: number
 }
 
+export interface ICIngredient {
+  itemName: string
+  itemCount: number
+  propModel: string
+  propCoords: Vec3
+  propRotation: Vec3
+}
+
+export interface ICRecipe {
+  id: string
+  label: string
+  resultItem: string
+  resultCount: number
+  resultPropModel: string
+  resultPropRotation: Vec3
+  ingredients: ICIngredient[]
+}
+
+export interface InteractiveCrafting {
+  id: string
+  label: string
+  coords: Vec3
+  recipes: ICRecipe[]
+}
+
 export interface Ingredient {
   itemName: string
   itemCount: number
@@ -90,6 +115,7 @@ export interface Job {
   shops?: Shop[]
   blips?: Blip[]
   props?: Prop[]
+  interactiveCraftings?: InteractiveCrafting[]
 }
 
 export interface Item {
@@ -112,6 +138,7 @@ export type EditorPanel =
   | 'shopEditor'
   | 'blipEditor'
   | 'propEditor'
+  | 'interactiveCraftingEditor'
   | 'featureEditor'
   | null
 
@@ -120,4 +147,6 @@ export type PlayerPanel =
   | 'cashRegister'
   | 'confirm'
   | 'shop'
+  | 'interactiveCrafting'
+  | 'propGizmo'
   | null
