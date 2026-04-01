@@ -23,36 +23,11 @@ function UpdateGizmoCam()
     local hRad = math.rad(GizmoState.camHeading)
     local d = GizmoState.camDist
 
-    -- Desired camera offset (45° elevation)
-    local offX = math.sin(hRad) * d * 0.7
-    local offY = -math.cos(hRad) * d * 0.7
-    local offZ = d * 0.7
-    local desiredX = pos.x + offX
-    local desiredY = pos.y + offY
-    local desiredZ = pos.z + offZ
+    local camX = pos.x + math.sin(hRad) * d * 0.7
+    local camY = pos.y - math.cos(hRad) * d * 0.7
+    local camZ = pos.z + d * 0.7
 
-    -- Wall avoidance: sweep from prop toward desired camera position
-    local ray = StartExpensiveSynchronousShapeTestLosProbe(
-        pos.x, pos.y, pos.z + 0.1,
-        desiredX, desiredY, desiredZ,
-        1 | 16,         -- world + vehicles
-        GizmoState.prop,
-        7
-    )
-    local _, hit, hitCoords = GetShapeTestResult(ray)
-    if hit and hitCoords then
-        -- Pull camera back to just before the wall (leave 0.3m gap)
-        local dx = hitCoords.x - pos.x
-        local dy = hitCoords.y - pos.y
-        local dz = hitCoords.z - pos.z
-        local dist = math.sqrt(dx*dx + dy*dy + dz*dz)
-        local safeRatio = math.max(0.0, (dist - 0.3)) / math.max(dist, 0.01)
-        desiredX = pos.x + dx * safeRatio
-        desiredY = pos.y + dy * safeRatio
-        desiredZ = pos.z + dz * safeRatio
-    end
-
-    SetCamCoord(GizmoState.cam, desiredX, desiredY, desiredZ)
+    SetCamCoord(GizmoState.cam, camX, camY, camZ)
     PointCamAtCoord(GizmoState.cam, pos.x, pos.y, pos.z)
 end
 

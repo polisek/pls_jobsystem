@@ -312,18 +312,19 @@ RegisterNUICallback("requestPropPlacement", function(data, cb)
             return
         end
 
-        -- Pick spawn position: hint coords → brief raycast → player position
+        -- Pick spawn position: hint coords (IC editor) → 3 m in front of player
         local spawnPos
         if hintCoords and hintCoords.x then
             spawnPos = vector3(hintCoords.x, hintCoords.y, hintCoords.z)
         else
-            local hit, _, rCoords = lib.raycast.cam(1 | 16)
-            if hit and rCoords then
-                spawnPos = rCoords
-            else
-                spawnPos = GetEntityCoords(cache.ped) + GetEntityForwardVector(cache.ped) * 2.0
-            end
+            -- NUI is focused so raycast is unreliable — always place near player
+            local pedPos = GetEntityCoords(cache.ped)
+            local fwd    = GetEntityForwardVector(cache.ped)
+            spawnPos = vector3(pedPos.x + fwd.x * 3.0, pedPos.y + fwd.y * 3.0, pedPos.z)
         end
+        -- Snap to ground
+        local snapped, groundZ = GetGroundZFor_3dCoord(spawnPos.x, spawnPos.y, spawnPos.z + 2.0, false)
+        if snapped then spawnPos = vector3(spawnPos.x, spawnPos.y, groundZ) end
 
         -- Spawn ghost prop
         GizmoState.prop = CreateObject(model, spawnPos.x, spawnPos.y, spawnPos.z, false, true, false)
