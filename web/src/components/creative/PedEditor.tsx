@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useJobStore } from '../../store/jobStore'
 import { useUIStore } from '../../store/uiStore'
 import { fetchNui } from '../../hooks/useNui'
+import { PED_MODELS } from '../../data/pedModels'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import type { Job } from '../../types'
@@ -14,10 +15,32 @@ export default function PedEditor() {
   const openEditor = useUIStore((s) => s.openEditor)
   const [showNew, setShowNew] = useState(false)
   const [newPed, setNewPed] = useState({ label: '', model: '', animAnim: '', animDict: '' })
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [selectedSuggestion, setSelectedSuggestion] = useState(-1)
+  const suggestionsRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   if (!selectedJob) return null
 
   const peds = selectedJob.peds || []
+
+  const suggestions = useMemo(() => {
+    if (!newPed.model || newPed.model.length < 1) return []
+    const q = newPed.model.toLowerCase()
+    return PED_MODELS.filter((m) => m.includes(q)).slice(0, 20)
+  }, [newPed.model])
+
+  useEffect(() => {
+    setSelectedSuggestion(-1)
+  }, [newPed.model])
+
+  // Scroll selected into view
+  useEffect(() => {
+    if (selectedSuggestion >= 0 && suggestionsRef.current) {
+      const el = suggestionsRef.current.children[selectedSuggestion] as HTMLElement
+      if (el) el.scrollIntoView({ block: 'nearest' })
+    }
+  }, [selectedSuggestion])
 
   const saveJob = (job: Job) => {
     updateSelectedJob(() => job)
@@ -47,6 +70,32 @@ export default function PedEditor() {
     const updated = { ...selectedJob }
     updated.peds = peds.filter((_, i) => i !== index)
     saveJob(updated)
+  }
+
+  const handleModelChange = (value: string) => {
+    setNewPed({ ...newPed, model: value })
+    setShowSuggestions(true)
+  }
+
+  const handleSelectSuggestion = (model: string) => {
+    setNewPed({ ...newPed, model })
+    setShowSuggestions(false)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions || suggestions.length === 0) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSelectedSuggestion((prev) => Math.min(prev + 1, suggestions.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSelectedSuggestion((prev) => Math.max(prev - 1, 0))
+    } else if (e.key === 'Enter' && selectedSuggestion >= 0) {
+      e.preventDefault()
+      handleSelectSuggestion(suggestions[selectedSuggestion])
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false)
+    }
   }
 
   return (
@@ -94,12 +143,55 @@ export default function PedEditor() {
               onChange={(e) => setNewPed({ ...newPed, label: e.target.value })}
               placeholder="Cashier"
             />
-            <Input
-              label={t('pedEditor.model')}
-              value={newPed.model}
-              onChange={(e) => setNewPed({ ...newPed, model: e.target.value })}
-              placeholder="s_f_y_sweatshop_01"
-            />
+
+            {/* Model input with autocomplete */}
+            <div className="relative">
+              <label className="block text-[11px] font-medium text-gray-400 mb-1.5">{t('pedEditor.model')}</label>
+              <input
+                ref={inputRef}
+                type="text"
+                value={newPed.model}
+                onChange={(e) => handleModelChange(e.target.value)}
+                onFocus={() => newPed.model && setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                placeholder="s_f_y_sweatshop_01"
+                className="w-full h-9 px-3 rounded-lg bg-white/5 border border-panel-border/60 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-panel-accent/40 transition-colors"
+                autoComplete="off"
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div
+                  ref={suggestionsRef}
+                  className="absolute left-0 right-0 top-full mt-1 max-h-[180px] overflow-y-auto rounded-lg border border-panel-border/80 bg-[#1a1a2e] z-50"
+                >
+                  {suggestions.map((model, idx) => {
+                    // Highlight matching part
+                    const q = newPed.model.toLowerCase()
+                    const matchIdx = model.indexOf(q)
+                    const before = model.slice(0, matchIdx)
+                    const match = model.slice(matchIdx, matchIdx + q.length)
+                    const after = model.slice(matchIdx + q.length)
+
+                    return (
+                      <button
+                        key={model}
+                        onClick={() => handleSelectSuggestion(model)}
+                        onMouseEnter={() => setSelectedSuggestion(idx)}
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
+                          idx === selectedSuggestion
+                            ? 'bg-panel-accent/15 text-white'
+                            : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+                        }`}
+                      >
+                        {before}
+                        <span className="text-pink-400 font-medium">{match}</span>
+                        {after}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
             <Input
               label={t('pedEditor.animation')}
               value={newPed.animAnim}
