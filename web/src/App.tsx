@@ -10,6 +10,7 @@ import StashEditor from './components/creative/StashEditor'
 import PedEditor from './components/creative/PedEditor'
 import ShopEditor from './components/creative/ShopEditor'
 import BlipEditor from './components/creative/BlipEditor'
+import PropEditor from './components/creative/PropEditor'
 import FeatureEditor from './components/creative/FeatureEditor'
 import CraftingPanel from './components/panels/CraftingPanel'
 import CashRegisterPanel from './components/panels/CashRegisterPanel'
@@ -102,6 +103,7 @@ export default function App() {
           {editorPanel === 'pedEditor' && <PedEditor />}
           {editorPanel === 'shopEditor' && <ShopEditor />}
           {editorPanel === 'blipEditor' && <BlipEditor />}
+          {editorPanel === 'propEditor' && <PropEditor />}
         </>
       )}
 

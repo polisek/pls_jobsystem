@@ -34,6 +34,7 @@
     "peds": "NPCs",
     "shops": "Shops",
     "blips": "Blips",
+    "props": "Props",
     "deleteJob": "Delete Job",
     "setPosition": "Set Position",
     "removePosition": "Remove Position",
@@ -132,6 +133,16 @@
     "selectingItem": "Select item in sidebar",
     "clickItemHint": "Click an item on the right",
     "clickToActivate": "Click to activate"
+  },
+  "propEditor": {
+    "title": "Prop Editor",
+    "props": "props",
+    "newProp": "New Prop",
+    "model": "Prop Model",
+    "modelHint": "e.g. prop_bench_01a, prop_tree_birch_03",
+    "place": "Place",
+    "placing": "Placing...",
+    "placingHint": "[E] Confirm · [Q/R] Rotate · [X] Cancel"
   },
   "blipEditor": {
     "title": "Blip Editor",

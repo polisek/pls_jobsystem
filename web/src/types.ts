@@ -59,6 +59,13 @@ export interface Blip {
   jobOnly: boolean  // true = vidí jen hráči se stejným jobem
 }
 
+export interface Prop {
+  id: string
+  model: string
+  coords: Vec3
+  rotation: Vec3
+}
+
 export interface Ped {
   label: string
   model: string
@@ -82,6 +89,7 @@ export interface Job {
   peds?: Ped[]
   shops?: Shop[]
   blips?: Blip[]
+  props?: Prop[]
 }
 
 export interface Item {
@@ -103,6 +111,7 @@ export type EditorPanel =
   | 'pedEditor'
   | 'shopEditor'
   | 'blipEditor'
+  | 'propEditor'
   | 'featureEditor'
   | null
 

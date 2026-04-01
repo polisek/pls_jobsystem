@@ -2,7 +2,123 @@ local Jobs = {}
 local Targets = {}
 local Peds = {}
 local Blips = {}
+local Props = {}   -- { model, coords, rotation, entity }
 local items = BRIDGE.GetItems()
+
+-- ─────────────────────────────────────────────────────────
+--  PROP PLACEMENT (ghost prop + raycast loop)
+-- ─────────────────────────────────────────────────────────
+function PlaceProp(modelName)
+    local model = joaat(modelName)
+    RequestModel(model)
+    local timeout = 0
+    while not HasModelLoaded(model) do
+        Wait(50)
+        timeout = timeout + 50
+        if timeout > 5000 then
+            -- Model failed to load
+            SetModelAsNoLongerNeeded(model)
+            NUINotify({ title = "Error", description = "Model not found: " .. modelName, type = "error" })
+            return false
+        end
+    end
+
+    local ghostProp = nil
+
+    while true do
+        Wait(0)
+        local hit, _, coords = lib.raycast.cam(1 | 16)
+
+        if hit and coords then
+            lib.showTextUI("[E] Potvrdit  |  [Q] Vlevo  [R] Vpravo  |  [X] Zrusit")
+
+            if not ghostProp then
+                ghostProp = CreateObject(model, coords.x, coords.y, coords.z, false, true, false)
+                SetEntityCollision(ghostProp, false, true)
+                SetEntityAsMissionEntity(ghostProp, true, true)
+                SetEntityAlpha(ghostProp, 150, false)
+            else
+                SetEntityCoords(ghostProp, coords.x, coords.y, coords.z, false, false, false, true)
+
+                -- Q = rotate left (control 15)
+                if IsControlJustPressed(0, 15) then
+                    local rot = GetEntityRotation(ghostProp, 2)
+                    SetEntityRotation(ghostProp, rot.x, rot.y, rot.z + 5.0, 2, true)
+                end
+                -- R = rotate right (control 14)
+                if IsControlJustPressed(0, 14) then
+                    local rot = GetEntityRotation(ghostProp, 2)
+                    SetEntityRotation(ghostProp, rot.x, rot.y, rot.z - 5.0, 2, true)
+                end
+
+                -- E = confirm (control 38)
+                if IsControlJustReleased(0, 38) then
+                    local finalCoords = GetEntityCoords(ghostProp)
+                    local finalRot    = GetEntityRotation(ghostProp, 2)
+                    lib.hideTextUI()
+                    DeleteEntity(ghostProp)
+                    SetModelAsNoLongerNeeded(model)
+                    return {
+                        coords   = vector3(finalCoords.x, finalCoords.y, finalCoords.z),
+                        rotation = vector3(finalRot.x, finalRot.y, finalRot.z),
+                    }
+                end
+
+                -- X = cancel (control 73)
+                if IsControlJustReleased(0, 73) then
+                    lib.hideTextUI()
+                    DeleteEntity(ghostProp)
+                    SetModelAsNoLongerNeeded(model)
+                    return false
+                end
+            end
+        else
+            if ghostProp then
+                lib.showTextUI("[X] Zrusit")
+            end
+            -- X to cancel even when no surface hit
+            if IsControlJustReleased(0, 73) then
+                lib.hideTextUI()
+                if ghostProp then DeleteEntity(ghostProp) end
+                SetModelAsNoLongerNeeded(model)
+                return false
+            end
+        end
+    end
+end
+
+-- ─────────────────────────────────────────────────────────
+--  PROP GENERATION (reads blips from Jobs)
+-- ─────────────────────────────────────────────────────────
+local function GenerateProps()
+    for _, prop in pairs(Props) do
+        if DoesEntityExist(prop.entity) then
+            DeleteEntity(prop.entity)
+        end
+    end
+    Props = {}
+
+    for _, job in pairs(Jobs) do
+        if job.props then
+            for _, propData in pairs(job.props) do
+                local model = joaat(propData.model)
+                RequestModel(model)
+                while not HasModelLoaded(model) do Wait(10) end
+                
+                local entity = CreateObject(model, propData.coords.x, propData.coords.y, propData.coords.z, false, false, false)
+                SetEntityRotation(entity, propData.rotation.x, propData.rotation.y, propData.rotation.z, 2, true)
+                FreezeEntityPosition(entity, true)
+                
+                table.insert(Props, {
+                    model = propData.model,
+                    coords = propData.coords,
+                    rotation = propData.rotation,
+                    entity = entity
+                })
+            end
+        end
+    end
+end
 
 local function GenerateBlips()
     -- Remove old blips
@@ -279,6 +395,7 @@ AddEventHandler("pls_jobsystem:client:recivieJobs", function(ServerJobs)
     Jobs = ServerJobs
     GenerateCraftings()
     GenerateBlips()
+    GenerateProps()
   end
 end)
 
@@ -293,6 +410,7 @@ AddEventHandler("pls_jobsystem:client:Pull", function(ServerJobs)
   Wait(100)
   GenerateCraftings()
   GenerateBlips()
+  GenerateProps()
   -- Update creative mode if open
   UpdateCreativeJobs(Jobs)
 end)
@@ -327,6 +445,35 @@ CreateThread(function()
               DeleteEntity(Peds[i].entity)
               Peds[i].entity = nil
           end
+      end
+    end
+    Wait(8000)
+  end
+end)
+
+-- Props distance-based spawn/despawn thread
+CreateThread(function()
+  while true do
+    local playerCoords = GetEntityCoords(cache.ped)
+    for i, propData in pairs(Props) do
+      local dist = #(vector3(playerCoords.x, playerCoords.y, playerCoords.z)
+                    - vector3(propData.coords.x, propData.coords.y, propData.coords.z))
+      if not Props[i].entity then
+        if dist < 60.0 then
+          local model = joaat(propData.model)
+          RequestModel(model)
+          while not HasModelLoaded(model) do Wait(50) end
+          local ent = CreateObject(model, propData.coords.x, propData.coords.y, propData.coords.z, false, false, false)
+          SetEntityRotation(ent, propData.rotation.x, propData.rotation.y, propData.rotation.z, 2, true)
+          FreezeEntityPosition(ent, true)
+          SetModelAsNoLongerNeeded(model)
+          Props[i].entity = ent
+        end
+      else
+        if dist > 65.0 then
+          DeleteEntity(Props[i].entity)
+          Props[i].entity = nil
+        end
       end
     end
     Wait(8000)

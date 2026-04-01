@@ -298,3 +298,32 @@ RegisterNUICallback("buyShopItem", function(data, cb)
     end
     cb({ ok = true })
 end)
+
+RegisterNUICallback("requestPropPlacement", function(data, cb)
+    -- Close NUI and start prop placement loop in Lua
+    SetNuiFocus(false, false)
+    isNUIOpen = false
+    cb({ ok = true })
+
+    CreateThread(function()
+        local result = PlaceProp(data.model)
+        -- Re-open NUI and notify React of result
+        SetNuiFocus(true, true)
+        isNUIOpen = true
+        if result then
+            SendNUIMessage({
+                action = "propPlaced",
+                data = {
+                    cancelled = false,
+                    coords = { x = result.coords.x, y = result.coords.y, z = result.coords.z },
+                    rotation = { x = result.rotation.x, y = result.rotation.y, z = result.rotation.z },
+                }
+            })
+        else
+            SendNUIMessage({
+                action = "propPlaced",
+                data = { cancelled = true }
+            })
+        end
+    end)
+end)

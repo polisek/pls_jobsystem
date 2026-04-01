@@ -34,6 +34,7 @@
     "peds": "NPC",
     "shops": "Obchody",
     "blips": "Blipy",
+    "props": "Propy",
     "deleteJob": "Smazat job",
     "setPosition": "Nastavit pozici",
     "removePosition": "Odebrat pozici",
@@ -132,6 +133,16 @@
     "selectingItem": "Vyber polozku v sidebaru",
     "clickItemHint": "Klikni na item vpravo",
     "clickToActivate": "Klikni pro aktivaci"
+  },
+  "propEditor": {
+    "title": "Editor propu",
+    "props": "propu",
+    "newProp": "Novy prop",
+    "model": "Model propu",
+    "modelHint": "Napr. prop_bench_01a, prop_tree_birch_03",
+    "place": "Umistit",
+    "placing": "Umistovani...",
+    "placingHint": "[E] Potvrdit · [Q/R] Rotace · [X] Zrusit"
   },
   "blipEditor": {
     "title": "Editor blipu",
