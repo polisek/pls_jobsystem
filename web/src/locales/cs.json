@@ -33,6 +33,7 @@
     "stashes": "Stashe",
     "peds": "NPC",
     "shops": "Obchody",
+    "blips": "Blipy",
     "deleteJob": "Smazat job",
     "setPosition": "Nastavit pozici",
     "removePosition": "Odebrat pozici",
@@ -131,6 +132,18 @@
     "selectingItem": "Vyber polozku v sidebaru",
     "clickItemHint": "Klikni na item vpravo",
     "clickToActivate": "Klikni pro aktivaci"
+  },
+  "blipEditor": {
+    "title": "Editor blipu",
+    "blips": "blipu",
+    "newBlip": "Novy blip",
+    "label": "Nazev",
+    "sprite": "Ikona (sprite)",
+    "color": "Barva",
+    "scale": "Velikost",
+    "visibility": "Viditelnost",
+    "jobOnly": "Pouze job",
+    "everyone": "Vsichni hráci"
   },
   "shop": {
     "title": "Obchod",

@@ -33,6 +33,7 @@
     "stashes": "Stashes",
     "peds": "NPCs",
     "shops": "Shops",
+    "blips": "Blips",
     "deleteJob": "Delete Job",
     "setPosition": "Set Position",
     "removePosition": "Remove Position",
@@ -131,6 +132,18 @@
     "selectingItem": "Select item in sidebar",
     "clickItemHint": "Click an item on the right",
     "clickToActivate": "Click to activate"
+  },
+  "blipEditor": {
+    "title": "Blip Editor",
+    "blips": "blips",
+    "newBlip": "New Blip",
+    "label": "Label",
+    "sprite": "Icon (sprite)",
+    "color": "Color",
+    "scale": "Scale",
+    "visibility": "Visibility",
+    "jobOnly": "Job only",
+    "everyone": "All players"
   },
   "shop": {
     "title": "Shop",

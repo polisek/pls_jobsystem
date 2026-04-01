@@ -49,6 +49,16 @@ export interface Stash {
   job: boolean
 }
 
+export interface Blip {
+  id: string
+  label: string
+  coords: Vec3
+  sprite: number
+  color: number
+  scale: number
+  jobOnly: boolean  // true = vidí jen hráči se stejným jobem
+}
+
 export interface Ped {
   label: string
   model: string
@@ -71,6 +81,7 @@ export interface Job {
   stashes?: Stash[]
   peds?: Ped[]
   shops?: Shop[]
+  blips?: Blip[]
 }
 
 export interface Item {
@@ -91,6 +102,7 @@ export type EditorPanel =
   | 'stashEditor'
   | 'pedEditor'
   | 'shopEditor'
+  | 'blipEditor'
   | 'featureEditor'
   | null
 

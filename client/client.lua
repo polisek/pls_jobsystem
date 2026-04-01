@@ -1,7 +1,42 @@
 local Jobs = {}
 local Targets = {}
 local Peds = {}
+local Blips = {}
 local items = BRIDGE.GetItems()
+
+local function GenerateBlips()
+    -- Remove old blips
+    for _, blip in pairs(Blips) do
+        if DoesBlipExist(blip) then
+            RemoveBlip(blip)
+        end
+    end
+    Blips = {}
+
+    local playerJob = BRIDGE.GetPlayerJob()
+
+    for _, job in pairs(Jobs) do
+        if job.blips then
+            for _, blipData in pairs(job.blips) do
+                -- Skip job-only blips if player doesn't have this job
+                if blipData.jobOnly and playerJob ~= job.job then
+                    -- don't add
+                else
+                    local blip = AddBlipForCoord(blipData.coords.x, blipData.coords.y, blipData.coords.z)
+                    SetBlipSprite(blip, blipData.sprite or 1)
+                    SetBlipColour(blip, blipData.color or 2)
+                    SetBlipScale(blip, blipData.scale or 0.8)
+                    SetBlipAsShortRange(blip, true)
+                    BeginTextCommandSetBlipName("STRING")
+                    AddTextComponentString(blipData.label or "")
+                    EndTextCommandSetBlipName(blip)
+                    table.insert(Blips, blip)
+                end
+            end
+        end
+    end
+end
+
 
 local function AddNewPed(pedData)
   table.insert(Peds, pedData)
@@ -243,6 +278,7 @@ AddEventHandler("pls_jobsystem:client:recivieJobs", function(ServerJobs)
   if Jobs then
     Jobs = ServerJobs
     GenerateCraftings()
+    GenerateBlips()
   end
 end)
 
@@ -256,6 +292,7 @@ AddEventHandler("pls_jobsystem:client:Pull", function(ServerJobs)
   Jobs = ServerJobs
   Wait(100)
   GenerateCraftings()
+  GenerateBlips()
   -- Update creative mode if open
   UpdateCreativeJobs(Jobs)
 end)
