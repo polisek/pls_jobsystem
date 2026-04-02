@@ -6,7 +6,22 @@
 **Script must have name pls_jobsystem**
 
 
-# 📙 Job system v2.0.0
+
+*Check this for info about 2.0: ->* https://github.com/polisek/pls_jobsystem/blob/main/cfx_post.md
+*Check this for info about 2.0: ->* https://github.com/polisek/pls_jobsystem/blob/main/cfx_post.md
+*Check this for info about 2.0: ->* https://github.com/polisek/pls_jobsystem/blob/main/cfx_post.md
+
+
+
+
+
+
+
+
+
+
+
+# 📙 Job system v1.0.0
 Job system for creating production tables.
 
 ## Dependencies
