@@ -1,6 +1,10 @@
 
 ![job_system](https://github.com/polisek/pls_jobsystem/assets/107623238/44215dfa-591e-4753-9d7e-b36806b4cc80)
 
+Update 2.0.0: https://github.com/polisek/pls_jobsystem/blob/main/cfx_post.md
+Script must have name pls_jobsystem
+
+
 # 📙 Job system v2.0.0
 Job system for creating production tables.
 
