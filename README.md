@@ -20,7 +20,6 @@ Targets: ox_target, qb-target
 BRIDGE.UseMarkers = false
 ```
 ## Commands
-/createjob - This will start to create a new job.
 /open_jobs - Opens the menu of all jobs.
 
 ## Configuration
