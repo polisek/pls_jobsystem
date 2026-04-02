@@ -49,9 +49,14 @@ export default function CreativeSidebar() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-2 h-2 rounded-full bg-panel-accent animate-pulse" />
-            <h2 className="text-sm font-semibold text-white tracking-wide uppercase">
-              {t('creative.title')}
-            </h2>
+            <div>
+              <h2 className="text-sm font-semibold text-white tracking-wide uppercase">
+                {t('creative.title')}
+              </h2>
+              <p className="text-[10px] text-panel-accent/60 font-medium tracking-widest uppercase mt-0.5">
+                by PLS SCRIPTS
+              </p>
+            </div>
           </div>
           <button
             onClick={() => fetchNui('closeUI')}

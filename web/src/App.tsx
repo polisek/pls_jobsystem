@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNuiEvent, fetchNui, isEnvBrowser } from './hooks/useNui'
+
+const EXPECTED_RESOURCE = 'pls_jobsystem'
+const actualResource = (window as any).GetParentResourceName?.() as string | undefined
+const IS_RESOURCE_VALID = isEnvBrowser || !actualResource || actualResource === EXPECTED_RESOURCE
 import { useJobStore } from './store/jobStore'
 import { useUIStore } from './store/uiStore'
 import CreativeSidebar from './components/creative/CreativeSidebar'
@@ -95,6 +99,32 @@ export default function App() {
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [activePanel, creativeMode])
+
+  if (!IS_RESOURCE_VALID) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-[9999]">
+        <div className="glass rounded-2xl border border-red-500/40 p-8 max-w-md w-full mx-4 flex flex-col gap-4 text-center">
+          <div className="w-14 h-14 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center mx-auto">
+            <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-red-300 mb-1">Neplatný název resource</h2>
+            <p className="text-sm text-gray-400">
+              Resource musí být pojmenován{' '}
+              <span className="font-mono text-white bg-white/10 px-1.5 py-0.5 rounded">{EXPECTED_RESOURCE}</span>
+            </p>
+            <p className="text-xs text-gray-600 mt-2">
+              Aktuální název:{' '}
+              <span className="font-mono text-red-400">{actualResource ?? '?'}</span>
+            </p>
+          </div>
+          <p className="text-[10px] text-gray-600">by PLS SCRIPTS</p>
+        </div>
+      </div>
+    )
+  }
 
   const hasContent = creativeMode || activePanel
 

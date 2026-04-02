@@ -1,5 +1,10 @@
 -- NUI Bridge: Communication layer between Lua client and React UI
 
+if GetCurrentResourceName() ~= "pls_jobsystem" then
+    print("^1[pls_jobsystem] CHYBA: Resource musi byt pojmenovan 'pls_jobsystem'. Soucasne jmeno: '" .. GetCurrentResourceName() .. "'. Script se nespusti.^0")
+    return
+end
+
 local isNUIOpen = false
 local isCreativeMode = false
 local raycastPromise = nil

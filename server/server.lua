@@ -1,8 +1,26 @@
+local EXPECTED_NAME = "pls_jobsystem"
+local IS_VALID = GetCurrentResourceName() == EXPECTED_NAME
+
 local Jobs = {}
 
+local BANNER = [[
+^2 ____  _     ____     ____   ____ ____  _  ____  ____  ____
+^2|  _ \| |   / ___|   / ___| / ___|  _ \| ||  _ \|  _ \/ ___|
+^2| |_) | |   \___ \   \___ \| |   | |_) | || |_) | |_) \___ \
+^2|  __/| |___ ___) |   ___) | |___|  _ <| ||  __/|  __/ ___) |
+^2|_|   |_____|____/   |____/ \____|_| \_\_||_|   |_|   |____/
+^0
+^5  PLS Job System ^0- ^3Dynamic job management^0
+^5  by PLS SCRIPTS^0
+]]
 
 AddEventHandler('onResourceStart', function(resourceName)
     if (GetCurrentResourceName() == resourceName) then
+        if not IS_VALID then
+            print("^1[pls_jobsystem] CHYBA: Resource musi byt pojmenovan '" .. EXPECTED_NAME .. "'. Soucasne jmeno: '" .. GetCurrentResourceName() .. "'. Script se nespusti.^0")
+            return
+        end
+        print(BANNER)
         local loadFile = LoadResourceFile(GetCurrentResourceName(), "./server/jobs.json")
         if not loadFile then
             SaveResourceFile(GetCurrentResourceName(), "./server/jobs.json", json.encode({}), -1)
@@ -24,6 +42,7 @@ AddEventHandler('onResourceStart', function(resourceName)
 end)
 
 AddEventHandler(GetCurrentResourceName()..':playerLoaded', function(playerId)
+    if not IS_VALID then return end
     Wait(2000)
     TriggerClientEvent("pls_jobsystem:client:recivieJobs", playerId, Jobs)
 end)
@@ -46,6 +65,7 @@ local function IsPlayerHasCustomPerms(playerId)
     return true
 end
 
+if not IS_VALID then return end
 
 lib.callback.register('pls_jobsystem:server:getBalance', function(source,jobName)
     for _, job in pairs(Jobs) do
@@ -337,7 +357,7 @@ lib.addCommand('createjob', {
 end)
 
 lib.addCommand('open_jobs', {
-    help = 'This command open your job menu.',
+    help = '[PLS SCRIPTS] Open the Job System creative editor.',
     restricted = 'group.admin'
 }, function(source, args, raw)
     TriggerClientEvent("pls_jobsystem:client:openJobMenu", source, Jobs)

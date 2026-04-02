@@ -1,3 +1,5 @@
+if GetCurrentResourceName() ~= "pls_jobsystem" then return end
+
 local Jobs = {}
 local Targets = {}
 local Peds = {}
