@@ -1,7 +1,8 @@
 -- NUI Bridge: Communication layer between Lua client and React UI
 
 if GetCurrentResourceName() ~= "pls_jobsystem" then
-    print("^1[pls_jobsystem] CHYBA: Resource musi byt pojmenovan 'pls_jobsystem'. Soucasne jmeno: '" .. GetCurrentResourceName() .. "'. Script se nespusti.^0")
+    print("^1[pls_jobsystem] CHYBA: Resource musi byt pojmenovan 'pls_jobsystem'. Soucasne jmeno: '" ..
+    GetCurrentResourceName() .. "'. Script se nespusti.^0")
     return
 end
 
@@ -157,6 +158,7 @@ RegisterNUICallback("craftItem", function(data, cb)
     if data.craftingData then
         local craftingData = data.craftingData
         local hasAllItems = true
+
         if craftingData.ingedience then
             for _, v in pairs(craftingData.ingedience) do
                 local needed = tonumber(v.itemCount) or 0
@@ -168,12 +170,65 @@ RegisterNUICallback("craftItem", function(data, cb)
         else
             hasAllItems = false
         end
+
         if hasAllItems then
-            local animData = { anim = Config.DEFAULT_ANIM, dict = Config.DEFAULT_ANIM_DIC }
+            --------------------------------------------------
+            -- ANIMATION SETUP
+            --------------------------------------------------
+            local animData = {
+                anim = Config.DEFAULT_ANIM,
+                dict = Config.DEFAULT_ANIM_DIC
+            }
+
             if craftingData.animation then
                 if craftingData.animation.dict and craftingData.animation.anim then
-                    animData = { anim = craftingData.animation.anim, dict = craftingData.animation.dict }
+                    animData = {
+                        anim = craftingData.animation.anim,
+                        dict = craftingData.animation.dict
+                    }
                 end
+            end
+
+            local animTable = {
+                dict = animData.dict,
+                clip = animData.anim
+            }
+
+            if craftingData.animation and craftingData.animation.flag then
+                animTable.flag = craftingData.animation.flag
+            end
+
+            --------------------------------------------------
+            -- PROP SETUP
+            --------------------------------------------------
+            local progressProp = nil
+
+            if craftingData.animation and craftingData.animation.prop and craftingData.animation.prop ~= "" then
+                local propPos = vector3(0.13, 0.02, -0.03)
+                local propRot = vector3(-90.0, 0.0, 0.0)
+
+                if craftingData.animation.propPos then
+                    propPos = vector3(
+                        tonumber(craftingData.animation.propPos.x) or 0.13,
+                        tonumber(craftingData.animation.propPos.y) or 0.02,
+                        tonumber(craftingData.animation.propPos.z) or -0.03
+                    )
+                end
+
+                if craftingData.animation.propRot then
+                    propRot = vector3(
+                        tonumber(craftingData.animation.propRot.x) or -90.0,
+                        tonumber(craftingData.animation.propRot.y) or 0.0,
+                        tonumber(craftingData.animation.propRot.z) or 0.0
+                    )
+                end
+
+                progressProp = {
+                    model = joaat(craftingData.animation.prop),
+                    bone = tonumber(craftingData.animation.propBone) or 57005,
+                    pos = propPos,
+                    rot = propRot
+                }
             end
 
             CloseNUI()
@@ -186,14 +241,18 @@ RegisterNUICallback("craftItem", function(data, cb)
 
             local locale = Locales[GetLocale()] or Locales["en"]
             if lib.progressCircle({
-                duration = 10000,
-                label = string.format(locale.crafting_progress or "Preparing %s", itemLabel),
-                position = 'bottom',
-                useWhileDead = false,
-                canCancel = true,
-                disable = { car = true, move = true },
-                anim = { dict = animData.dict, clip = animData.anim },
-            }) then
+                    duration = 10000,
+                    label = string.format(locale.crafting_progress or "Preparing %s", itemLabel),
+                    position = 'bottom',
+                    useWhileDead = false,
+                    canCancel = true,
+                    disable = {
+                        car = true,
+                        move = true
+                    },
+                    anim = animTable,
+                    prop = progressProp
+                }) then
                 TriggerSecureEvent("pls_jobsystem:server:createItem", craftingData)
             end
         else
@@ -206,6 +265,7 @@ RegisterNUICallback("craftItem", function(data, cb)
             CloseNUI()
         end
     end
+
     cb({ ok = true })
 end)
 
@@ -303,7 +363,7 @@ RegisterNUICallback("requestPropPlacement", function(data, cb)
 
     CreateThread(function()
         local modelName = data.model
-        local hintCoords = data.coords  -- optional Vec3 hint from editor
+        local hintCoords = data.coords -- optional Vec3 hint from editor
 
         -- Load model
         local model = joaat(modelName)
@@ -325,7 +385,7 @@ RegisterNUICallback("requestPropPlacement", function(data, cb)
             -- NUI is focused so raycast is unreliable — always place near player
             local pedPos = GetEntityCoords(cache.ped)
             local fwd    = GetEntityForwardVector(cache.ped)
-            spawnPos = vector3(pedPos.x + fwd.x * 3.0, pedPos.y + fwd.y * 3.0, pedPos.z)
+            spawnPos     = vector3(pedPos.x + fwd.x * 3.0, pedPos.y + fwd.y * 3.0, pedPos.z)
         end
         -- Snap to ground
         local snapped, groundZ = GetGroundZFor_3dCoord(spawnPos.x, spawnPos.y, spawnPos.z + 2.0, false)
@@ -359,19 +419,19 @@ RegisterNUICallback("requestPropPlacement", function(data, cb)
             Wait(33)
             if not DoesEntityExist(GizmoState.prop) then break end
 
-            local pos = GetEntityCoords(GizmoState.prop)
-            local rot = GetEntityRotation(GizmoState.prop, 2)
+            local pos               = GetEntityCoords(GizmoState.prop)
+            local rot               = GetEntityRotation(GizmoState.prop, 2)
 
             -- Adaptive axis length so arrows are visible at any distance
-            local camPos = GetFinalRenderedCamCoord()
-            local dist   = #(camPos - pos)
-            local axLen  = math.max(0.4, dist * 0.12)
+            local camPos            = GetFinalRenderedCamCoord()
+            local dist              = #(camPos - pos)
+            local axLen             = math.max(0.4, dist * 0.12)
             GizmoState.axisWorldLen = axLen
 
-            local _, cx, cy = GetScreenCoordFromWorldCoord(pos.x, pos.y, pos.z)
-            local _, xx, xy = GetScreenCoordFromWorldCoord(pos.x + axLen, pos.y,        pos.z)
-            local _, yx, yy = GetScreenCoordFromWorldCoord(pos.x,        pos.y + axLen, pos.z)
-            local _, zx, zy = GetScreenCoordFromWorldCoord(pos.x,        pos.y,        pos.z + axLen)
+            local _, cx, cy         = GetScreenCoordFromWorldCoord(pos.x, pos.y, pos.z)
+            local _, xx, xy         = GetScreenCoordFromWorldCoord(pos.x + axLen, pos.y, pos.z)
+            local _, yx, yy         = GetScreenCoordFromWorldCoord(pos.x, pos.y + axLen, pos.z)
+            local _, zx, zy         = GetScreenCoordFromWorldCoord(pos.x, pos.y, pos.z + axLen)
 
             SendNUIMessage({
                 action = "gizmoUpdate",
@@ -382,9 +442,9 @@ RegisterNUICallback("requestPropPlacement", function(data, cb)
                         y = { x = yx, y = yy },
                         z = { x = zx, y = zy },
                     },
-                    worldPos      = { x = pos.x, y = pos.y, z = pos.z },
-                    rotation      = { x = rot.x, y = rot.y, z = rot.z },
-                    axisWorldLen  = axLen,
+                    worldPos     = { x = pos.x, y = pos.y, z = pos.z },
+                    rotation     = { x = rot.x, y = rot.y, z = rot.z },
+                    axisWorldLen = axLen,
                 }
             })
         end
@@ -401,15 +461,23 @@ RegisterNUICallback("gizmoApplyDelta", function(data, cb)
 
     if data.type == 'translate' then
         local nx, ny, nz = pos.x, pos.y, pos.z
-        if     data.axis == 'x' then nx = nx + d
-        elseif data.axis == 'y' then ny = ny + d
-        elseif data.axis == 'z' then nz = nz + d end
+        if data.axis == 'x' then
+            nx = nx + d
+        elseif data.axis == 'y' then
+            ny = ny + d
+        elseif data.axis == 'z' then
+            nz = nz + d
+        end
         SetEntityCoords(GizmoState.prop, nx, ny, nz, false, false, false, false)
     elseif data.type == 'rotate' then
         local rx, ry, rz = rot.x, rot.y, rot.z
-        if     data.axis == 'x' then rx = rx + d
-        elseif data.axis == 'y' then ry = ry + d
-        elseif data.axis == 'z' then rz = rz + d end
+        if data.axis == 'x' then
+            rx = rx + d
+        elseif data.axis == 'y' then
+            ry = ry + d
+        elseif data.axis == 'z' then
+            rz = rz + d
+        end
         SetEntityRotation(GizmoState.prop, rx, ry, rz, 2, true)
     end
 end)
@@ -431,7 +499,7 @@ RegisterNUICallback("gizmoConfirm", function(data, cb)
     local rot = GetEntityRotation(GizmoState.prop, 2)
 
     GizmoState.active = false
-    DeleteEntity(GizmoState.prop);  GizmoState.prop = nil
+    DeleteEntity(GizmoState.prop); GizmoState.prop = nil
     RenderScriptCams(false, true, 500, true, true)
     DestroyCam(GizmoState.cam, false); GizmoState.cam = nil
 
@@ -454,7 +522,9 @@ RegisterNUICallback("gizmoCancel", function(data, cb)
         DeleteEntity(GizmoState.prop); GizmoState.prop = nil
     end
     RenderScriptCams(false, true, 500, true, true)
-    if GizmoState.cam then DestroyCam(GizmoState.cam, false); GizmoState.cam = nil end
+    if GizmoState.cam then
+        DestroyCam(GizmoState.cam, false); GizmoState.cam = nil
+    end
 
     SendNUIMessage({ action = "propPlacedGizmo", data = { cancelled = true } })
 end)
